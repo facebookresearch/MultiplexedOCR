@@ -1,0 +1,45 @@
+_BASE_: "seg_rec_poly_fuse_feature_once.yaml"
+CHAR_MAP:
+  DIR: "TO_BE_ADDED/multiplexer/charmap/public/v2/"
+MODEL:
+  BACKBONE:
+    CONV_BODY: "R-50-FPN"
+    OUT_CHANNELS: 256
+  RESNETS:
+    BACKBONE_OUT_CHANNELS: 256
+  RPN:
+    USE_FPN: True
+    ANCHOR_STRIDE: (4, 8, 16, 32, 64)
+    PRE_NMS_TOP_N_TRAIN: 2000
+    PRE_NMS_TOP_N_TEST: 1000
+    POST_NMS_TOP_N_TEST: 1000
+    FPN_POST_NMS_TOP_N_TEST: 1000
+  SEG:
+    USE_FPN: True
+    USE_FUSE_FEATURE: True
+    TOP_N_TRAIN: 1000
+    TOP_N_TEST: 1000
+    # These are the parameters for the post-processing
+    # threshold for binarization
+    BINARY_THRESH: 0.1
+    # threshold for proposal filtering
+    BOX_THRESH: 0.1
+    # min size for proposal filtering
+    MIN_SIZE: 5
+    # shrink ratio of the polygons for training ground truth
+    SHRINK_RATIO: 0.4
+    # the ratio for unclip/dilate the regions in the inference period
+    EXPAND_RATIO: 3.0
+  ROI_HEADS:
+    USE_FPN: True
+    BATCH_SIZE_PER_IMAGE: 512
+  CHAR_MASK_ON: False
+  TRAIN_DETECTION_ONLY: True  # train detection only
+SOLVER:
+  BASE_LR: 0.0001
+  CHECKPOINT_PERIOD: 10000
+  IMS_PER_BATCH: 8
+  WARMUP_FACTOR: 0.1
+  WEIGHT_DECAY: 0.0001
+  STEPS: (100000, 200000)
+  MAX_ITER: 300000
