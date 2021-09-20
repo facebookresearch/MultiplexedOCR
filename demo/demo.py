@@ -1,4 +1,8 @@
 import argparse
+import os, sys
+
+from multiplexer.config import cfg
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Launch Multiplexer Demo")
@@ -18,3 +22,6 @@ if __name__ == "__main__":
     args = parse_args()
 
     print("Args: {}".format(args))
+
+    cfg.merge_from_file(args.config_file)
+    print(cfg)
