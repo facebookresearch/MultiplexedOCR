@@ -9,7 +9,9 @@
 ```bash
 conda create --name multiplexer
 conda activate multiplexer
-conda install yacs
+pip install yacs==0.1.8  # Note: conda only has yacs v0.1.6 now
+pip install numpy
+conda install pytorch torchvision cudatoolkit=11.1 -c pytorch -c conda-forge
 ```
 
 ## Demo 

@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 build/
 
+# ipython/jupyter notebooks
+*.ipynb
+**/.ipynb_checkpoints/

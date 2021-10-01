@@ -70,7 +70,7 @@ _C.SEQUENCE.LANGUAGES_ENABLED = ("ar", "bn", "hi", "ja", "ko", "la", "zh", "symb
 # For backward compatibility of the configs, when it's set to be None,
 # it means the seq heads for all languages are NOT frozen;
 # When it's an empty list, it means the seq heads for all languages are frozen;
-# _C.SEQUENCE.LANGUAGES_UNFREEZED = None
+_C.SEQUENCE.LANGUAGES_UNFREEZED = None  # requires yacs >= 0.1.8
 _C.SEQUENCE.NUM_CHAR = 36
 _C.SEQUENCE.EMBED_SIZE = 38
 _C.SEQUENCE.HIDDEN_SIZE = 256
@@ -539,6 +539,9 @@ _C.DATALOADER.ASPECT_RATIO_GROUPING = True
 # ---------------------------------------------------------------------------- #
 _C.MODEL.BACKBONE = CN()
 
+# options: build_resnet_backbone, build_resnet_fpn_backbone
+# here we use build_resnet_fpn_backbone as default for backward compatibility
+_C.MODEL.BACKBONE.NAME = "build_resnet_fpn_backbone"
 # The backbone conv body to use
 # The string must match a function that is imported in modeling.model_builder
 # (e.g., 'FPN.add_fpn_ResNet101_conv5_body' to specify a ResNet-101-FPN
