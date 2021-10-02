@@ -1,8 +1,12 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-from .build import BACKBONE_REGISTRY
+from collections import OrderedDict
 
 import torch.nn.functional as F
 from torch import nn
+
+from multiplexer.modeling.make_layers import conv_with_kaiming_uniform
+
+from .build import BACKBONE_REGISTRY
 from .resnet import build_resnet_backbone
 
 
@@ -73,7 +77,12 @@ class FPN(nn.Module):
 
         return tuple(results)
 
-    
+
+class LastLevelMaxPool(nn.Module):
+    def forward(self, x):
+        return [F.max_pool2d(x, 1, 2, 0)]
+
+
 @BACKBONE_REGISTRY.register()
 def build_resnet_fpn_backbone(cfg):
     if cfg.MODEL.RESNET34:
@@ -86,7 +95,7 @@ def build_resnet_fpn_backbone(cfg):
         body = resnet.ResNet(cfg)
     in_channels_stage2 = cfg.MODEL.RESNETS.RES2_OUT_CHANNELS
     out_channels = cfg.MODEL.RESNETS.BACKBONE_OUT_CHANNELS
-    fpn = fpn_module.FPN(
+    fpn = FPN(
         in_channels_list=[
             in_channels_stage2,
             in_channels_stage2 * 2,
@@ -94,10 +103,8 @@ def build_resnet_fpn_backbone(cfg):
             in_channels_stage2 * 8,
         ],
         out_channels=out_channels,
-        conv_block=conv_with_kaiming_uniform(
-            cfg.MODEL.FPN.USE_GN, cfg.MODEL.FPN.USE_RELU
-        ),
-        top_blocks=fpn_module.LastLevelMaxPool(),
+        conv_block=conv_with_kaiming_uniform(cfg.MODEL.FPN.USE_GN, cfg.MODEL.FPN.USE_RELU),
+        top_blocks=LastLevelMaxPool(),
     )
     model = nn.Sequential(OrderedDict([("body", body), ("fpn", fpn)]))
     model.out_channels = out_channels

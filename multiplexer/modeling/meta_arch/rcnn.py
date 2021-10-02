@@ -1,6 +1,9 @@
 from torch import nn
+
 from multiplexer.modeling.backbone import build_backbone
+
 from .build import META_ARCH_REGISTRY
+
 
 @META_ARCH_REGISTRY.register()
 class GeneralizedRCNN(nn.Module):
@@ -44,9 +47,7 @@ class GeneralizedRCNN(nn.Module):
         images = to_image_list(images)
         features = self.backbone(images.tensors)
         if self.cfg.MODEL.SEG_ON and not self.training:
-            (proposals, seg_results), fuse_feature = self.proposal(
-                images, features, targets
-            )
+            (proposals, seg_results), fuse_feature = self.proposal(images, features, targets)
         else:
             if self.cfg.MODEL.SEG_ON:
                 (proposals, proposal_losses), fuse_feature = self.proposal(
@@ -59,16 +60,12 @@ class GeneralizedRCNN(nn.Module):
                 proposals, proposal_losses = self.proposal(images, in_features, targets)
         if self.roi_heads is not None:
             if self.cfg.MODEL.SEG_ON and self.cfg.MODEL.SEG.USE_FUSE_FEATURE:
-                x, result, detector_losses = self.roi_heads(
-                    fuse_feature, proposals, targets
-                )
+                x, result, detector_losses = self.roi_heads(fuse_feature, proposals, targets)
             else:
                 in_features = features
                 if self.cfg.MODEL.FPN.USE_PRETRAINED:
                     in_features = list(features.values())
-                x, result, detector_losses = self.roi_heads(
-                    in_features, proposals, targets
-                )
+                x, result, detector_losses = self.roi_heads(in_features, proposals, targets)
         else:
             # RPN-only models don't have roi_heads
             # x = features

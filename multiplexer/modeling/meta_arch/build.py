@@ -15,6 +15,7 @@ META_ARCH_REGISTRY = Registry("META_ARCH")
 #     # "SegRCNN": SegRCNN,
 # }
 
+
 def build_model(cfg):
     meta_arch = META_ARCH_REGISTRY.get(cfg.MODEL.META_ARCHITECTURE)
     return meta_arch(cfg)

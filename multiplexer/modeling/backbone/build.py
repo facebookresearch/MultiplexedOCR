@@ -3,8 +3,6 @@ from multiplexer.utils.registry import Registry
 BACKBONE_REGISTRY = Registry("BACKBONE")
 
 
-
-
 # @registry.BACKBONES.register("R-18-FPN")
 # @registry.BACKBONES.register("R-34-FPN")
 # @registry.BACKBONES.register("R-50-FPN")
@@ -66,6 +64,7 @@ BACKBONE_REGISTRY = Registry("BACKBONE")
 #     model = nn.Sequential(OrderedDict([("body", body), ("fpn", fpn)]))
 #     model.out_channels = out_channels
 #     return model
+
 
 def build_backbone(cfg):
     """
