@@ -1,12 +1,11 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 
-import torch
 import torch.nn.functional as F
 from torch import nn
 
-from multiplexer.layers import Conv2d, FrozenBatchNorm2d
-from multiplexer.utils.registry import Registry
+from multiplexer.layers import Conv2d, DFConv2d, FrozenBatchNorm2d
+from multiplexer.modeling.make_layers import group_norm
 
 from .build import BACKBONE_REGISTRY
 
@@ -243,9 +242,9 @@ class Bottleneck(nn.Module):
             for modules in [
                 self.downsample,
             ]:
-                for l in modules.modules():
-                    if isinstance(l, Conv2d):
-                        nn.init.kaiming_uniform_(l.weight, a=1)
+                for layer in modules.modules():
+                    if isinstance(layer, Conv2d):
+                        nn.init.kaiming_uniform_(layer.weight, a=1)
 
         if dilation > 1:
             stride = 1  # reset to be 1
@@ -297,11 +296,11 @@ class Bottleneck(nn.Module):
         self.conv3 = Conv2d(bottleneck_channels, out_channels, kernel_size=1, bias=False)
         self.bn3 = norm_func(out_channels)
 
-        for l in [
+        for layer in [
             self.conv1,
             self.conv3,
         ]:
-            nn.init.kaiming_uniform_(l.weight, a=1)
+            nn.init.kaiming_uniform_(layer.weight, a=1)
 
     def forward(self, x):
         identity = x
@@ -335,10 +334,7 @@ class BaseStem(nn.Module):
         self.conv1 = Conv2d(3, out_channels, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_func(out_channels)
 
-        for l in [
-            self.conv1,
-        ]:
-            nn.init.kaiming_uniform_(l.weight, a=1)
+        nn.init.kaiming_uniform_(self.conv1.weight, a=1)
 
     def forward(self, x):
         x = self.conv1(x)

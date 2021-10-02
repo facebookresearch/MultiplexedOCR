@@ -32,6 +32,13 @@ _C.MODEL.TRAIN_DETECTION_ONLY = False
 _C.MODEL.RESNET34 = False
 _C.MODEL.TORCHSCRIPT_ONLY = False
 
+# ---------------------------------------------------------------------------- #
+# Proposal generator options
+# ---------------------------------------------------------------------------- #
+_C.MODEL.PROPOSAL_GENERATOR = CN()
+# Current proposal generators include "RPN", "RRPN" and "SPN"
+_C.MODEL.PROPOSAL_GENERATOR.NAME = "SPN"
+
 # Language-specific heads
 _C.MODEL.LANGUAGE = "en_num_36"
 

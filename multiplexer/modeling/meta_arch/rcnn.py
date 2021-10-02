@@ -1,6 +1,11 @@
 from torch import nn
 
 from multiplexer.modeling.backbone import build_backbone
+from multiplexer.modeling.proposal_generator import build_proposal_generator
+from multiplexer.modeling.roi_heads import build_roi_heads
+
+# from multiplexer.modeling.segmentation.seg_module_builder import build_segmentation
+from multiplexer.structures.image_list import to_image_list
 
 from .build import META_ARCH_REGISTRY
 
@@ -20,10 +25,12 @@ class GeneralizedRCNN(nn.Module):
         super(GeneralizedRCNN, self).__init__()
         self.cfg = cfg
         self.backbone = build_backbone(cfg)
-        if cfg.MODEL.SEG_ON:
-            self.proposal = build_segmentation(cfg)
-        else:
-            self.proposal = build_rpn(cfg)
+
+        self.proposal = build_proposal_generator(cfg)
+        # if cfg.MODEL.SEG_ON:
+        #     self.proposal = build_segmentation(cfg)
+        # else:
+        #     self.proposal = build_rpn(cfg)
         if cfg.MODEL.TRAIN_DETECTION_ONLY:
             self.roi_heads = None
         else:
