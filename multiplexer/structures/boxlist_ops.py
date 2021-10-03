@@ -1,10 +1,10 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 import torch
-from d2ocr.structures.rotated_box_list import RotatedBoxList
-from d2ocr.structures.segmentation_mask import SegmentationMask
 
-# from d2ocr.layers import nms as _box_nms
+# from multiplexer.layers import nms as _box_nms
 from multiplexer.structures.bounding_box import BoxList
+from multiplexer.structures.rotated_box_list import RotatedBoxList
+from multiplexer.structures.segmentation_mask import SegmentationMask
 
 
 # TODO redundant, remove
