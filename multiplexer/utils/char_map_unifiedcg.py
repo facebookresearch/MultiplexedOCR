@@ -1,6 +1,6 @@
-from d2ocr.utils.char_map import CharMap
-from d2ocr.utils.char_map_greek import GreekCharMap
-from d2ocr.utils.char_map_unifiedcyrillic import UnifiedCyrillicCharMap
+from .char_map import CharMap
+from .char_map_greek import GreekCharMap
+from .char_map_unifiedcyrillic import UnifiedCyrillicCharMap
 
 
 class UnifiedCGCharMap(CharMap):

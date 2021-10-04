@@ -1,5 +1,5 @@
-from d2ocr.utils.char_map import CharMap
-from d2ocr.utils.languages import MalayalamCharMap, SinhalaCharMap, TamilCharMap
+from multiplexer.utils.char_map import CharMap
+from multiplexer.utils.languages import MalayalamCharMap, SinhalaCharMap, TamilCharMap
 
 
 class UnifiedMSTCharMap(CharMap):

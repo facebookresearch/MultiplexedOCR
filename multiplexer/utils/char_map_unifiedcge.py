@@ -1,5 +1,5 @@
-from d2ocr.utils.char_map import CharMap
-from d2ocr.utils.char_map_unifiedcg import UnifiedCGCharMap
+from .char_map import CharMap
+from .char_map_unifiedcg import UnifiedCGCharMap
 
 
 class UnifiedCGECharMap(CharMap):

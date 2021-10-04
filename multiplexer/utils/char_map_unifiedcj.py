@@ -1,4 +1,4 @@
-from d2ocr.utils.char_map import CharMap
+from .char_map import CharMap
 
 
 class UnifiedCJCharMap(CharMap):

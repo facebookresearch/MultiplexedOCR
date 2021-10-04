@@ -1,5 +1,5 @@
-from d2ocr.utils.char_map import CharMap
-from d2ocr.utils.languages import BurmeseCharMap, KhmerCharMap, ThaiCharMap
+from .char_map import CharMap
+from .languages import BurmeseCharMap, KhmerCharMap, ThaiCharMap
 
 
 class UnifiedBKTCharMap(CharMap):

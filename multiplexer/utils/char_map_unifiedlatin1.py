@@ -1,4 +1,4 @@
-from d2ocr.utils.char_map import CharMap
+from multiplexer.utils.char_map import CharMap
 
 
 class UnifiedLatin1CharMap(CharMap):

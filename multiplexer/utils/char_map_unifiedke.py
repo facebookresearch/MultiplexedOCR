@@ -1,5 +1,5 @@
-from d2ocr.utils.char_map import CharMap
-from d2ocr.utils.char_map_hangul import HangulCharMap
+from .char_map import CharMap
+from .char_map_hangul import HangulCharMap
 
 
 class UnifiedKECharMap(CharMap):

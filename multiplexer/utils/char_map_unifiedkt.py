@@ -1,6 +1,6 @@
-from d2ocr.utils.char_map import CharMap
-from d2ocr.utils.char_map_kannada import KannadaCharMap
-from d2ocr.utils.char_map_telugu import TeluguCharMap
+from multiplexer.utils.char_map import CharMap
+from multiplexer.utils.char_map_kannada import KannadaCharMap
+from multiplexer.utils.char_map_telugu import TeluguCharMap
 
 
 class UnifiedKTCharMap(CharMap):

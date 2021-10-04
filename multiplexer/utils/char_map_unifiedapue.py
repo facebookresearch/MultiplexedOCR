@@ -1,4 +1,4 @@
-from d2ocr.utils.char_map_unifiedapu import UnifiedAPUCharMap
+from .char_map_unifiedapu import UnifiedAPUCharMap
 
 
 class UnifiedAPUECharMap(UnifiedAPUCharMap):
