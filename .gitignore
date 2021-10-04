@@ -1,7 +1,10 @@
-# Compilation
+# Compilation and distribution
 __pycache__/
 *.pyc
+*.so
 build/
+Multiplexer.egg-info
+dist
 
 # ipython/jupyter notebooks
 *.ipynb

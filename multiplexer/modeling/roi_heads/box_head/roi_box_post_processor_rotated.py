@@ -18,7 +18,7 @@ class RotatedBoxPostProcessor(BaseBoxPostProcessor):
         score_thresh=0.05,
         nms=0.5,
         detections_per_img=100,
-        box_coder=None,
+        box2box_transform=None,
         cfg=None,
     ):
         """
@@ -26,10 +26,10 @@ class RotatedBoxPostProcessor(BaseBoxPostProcessor):
             score_thresh (float)
             nms (float)
             detections_per_img (int)
-            box_coder (BoxCoder)
+            box2box_transform (Box2BoxTransform)
         """
         super(RotatedBoxPostProcessor, self).__init__(
-            score_thresh, nms, detections_per_img, box_coder, cfg
+            score_thresh, nms, detections_per_img, box2box_transform, cfg
         )
 
     def forward(self, x, boxes):
@@ -60,7 +60,7 @@ class RotatedBoxPostProcessor(BaseBoxPostProcessor):
 
         if self.cfg.MODEL.ROI_BOX_HEAD.USE_REGRESSION:
             concat_boxes = torch.cat([a.bbox for a in boxes], dim=0)
-            proposals = self.box_coder.decode(
+            proposals = self.box2box_transform.decode(
                 box_regression.view(sum(boxes_per_image), -1), concat_boxes
             )
             proposals = proposals.split(boxes_per_image, dim=0)

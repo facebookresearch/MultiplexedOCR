@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import torch
 import torch.nn.functional as F
 from torch import nn
 
-from multiplexer.modeling.box_coder import BoxCoder
-from multiplexer.structures.bounding_box import Boxes, BoxList
+from multiplexer.modeling.box_regression import Box2BoxTransform
+from multiplexer.structures.bounding_box import BoxList
 from multiplexer.structures.boxlist_ops import boxlist_nms, cat_boxlist
 
 
@@ -24,7 +24,7 @@ class BaseBoxPostProcessor(nn.Module):
         score_thresh=0.05,
         nms=0.5,
         detections_per_img=100,
-        box_coder=None,
+        box2box_transform=None,
         cfg=None,
     ):
         """
@@ -32,7 +32,7 @@ class BaseBoxPostProcessor(nn.Module):
             score_thresh (float)
             nms (float)
             detections_per_img (int)
-            box_coder (BoxCoder)
+            box2box_transform (Box2BoxTransform)
         """
         super(BaseBoxPostProcessor, self).__init__()
         self.cfg = cfg
@@ -40,11 +40,11 @@ class BaseBoxPostProcessor(nn.Module):
         self.nms = nms
         self.detections_per_img = detections_per_img
         if cfg.MODEL.ROI_BOX_HEAD.USE_REGRESSION:
-            if box_coder is None:
-                box_coder = BoxCoder(weights=(10.0, 10.0, 5.0, 5.0))
-            self.box_coder = box_coder
+            if box2box_transform is None:
+                box2box_transform = Box2BoxTransform(weights=(10.0, 10.0, 5.0, 5.0))
+            self.box2box_transform = box2box_transform
 
-    def forward(self, x: Tuple[torch.Tensor, torch.Tensor], boxes: List[Boxes]):
+    def forward(self, x: Tuple[torch.Tensor, torch.Tensor], boxes: List[BoxList]):
         """
         Arguments:
             x (tuple[tensor, tensor]): x contains the class logits
@@ -70,7 +70,7 @@ class BaseBoxPostProcessor(nn.Module):
             masks = [box.get_field("masks") for box in boxes]
         if self.cfg.MODEL.ROI_BOX_HEAD.USE_REGRESSION:
             concat_boxes = torch.cat([a.bbox for a in boxes], dim=0)
-            proposals = self.box_coder.decode(
+            proposals = self.box2box_transform.decode(
                 box_regression.view(sum(boxes_per_image), -1), concat_boxes
             )
             proposals = proposals.split(boxes_per_image, dim=0)
@@ -181,94 +181,3 @@ class BaseBoxPostProcessor(nn.Module):
             keep = torch.nonzero(keep).squeeze(1)
             result = result[keep]
         return result
-
-
-# torchscript version of BaseBoxPostProcessor, uses simplified Boxes structure
-# assumes only one foreground class, and final nms is skipped
-class BaseBoxPostProcessorForTorchscript(nn.Module):
-    def __init__(
-        self,
-        score_thresh=0.05,
-        nms=0.5,
-        detections_per_img=100,
-        box_coder=None,
-        cfg=None,
-    ):
-        """
-        Arguments:
-            score_thresh (float)
-            nms (float)
-            detections_per_img (int)
-            box_coder (BoxCoder)
-        """
-        super(BaseBoxPostProcessorForTorchscript, self).__init__()
-        self.cfg = cfg
-        self.score_thresh = score_thresh
-        self.nms = nms
-        self.detections_per_img = detections_per_img
-        if box_coder is None:
-            box_coder = BoxCoder(weights=(10.0, 10.0, 5.0, 5.0))
-        self.box_coder: BoxCoder = box_coder
-        self.use_regression = cfg.MODEL.ROI_BOX_HEAD.USE_REGRESSION
-
-    # compared to original version, here we assume only one class
-    # also nms is skipped, but it may not have much impact for SPN
-    def filter_results(self, boxes: torch.Tensor, scores: torch.Tensor):
-        inds_all = scores > self.score_thresh
-        inds = inds_all.nonzero()
-
-        boxes = boxes[inds].squeeze(1)
-        scores = scores[inds].squeeze(1)
-
-        number_of_detections = len(boxes)
-        if number_of_detections > self.detections_per_img:
-            image_thresh, _ = torch.kthvalue(
-                scores, number_of_detections - self.detections_per_img + 1
-            )
-            keep = scores >= image_thresh.item()
-            keep = torch.nonzero(keep).squeeze(1)
-            boxes = boxes[keep].squeeze(1)
-            scores = scores.unsqueeze(1)[keep].squeeze(1)
-
-        return boxes, scores
-
-    def forward(self, x: Tuple[torch.Tensor, Optional[torch.Tensor]], boxes: List[Boxes]):
-        class_logits, box_regression = x
-        class_prob = F.softmax(class_logits, -1)
-
-        image_shapes = [box.size for box in boxes]
-        boxes_per_image = [len(box) for box in boxes]
-
-        if isinstance(box_regression, torch.Tensor):
-            # this means USE_REGRESSION is enabled
-            # note simply checking self.use_regression here will cause type error
-            concat_boxes = torch.cat([a.bbox for a in boxes], dim=0)
-            proposals = self.box_coder.decode(
-                box_regression.view(sum(boxes_per_image), -1), concat_boxes
-            )
-            proposals = proposals.split(boxes_per_image, dim=0)
-        else:
-            proposals = [a.bbox for a in boxes]
-
-        class_prob = class_prob.split(boxes_per_image, dim=0)
-
-        results: List[Boxes] = []
-
-        for prob, boxes_per_img, image_shape in zip(class_prob, proposals, image_shapes):
-            # note this hard-coded for text detection inference
-            # there are only two classes, and first class is background
-            # boxes has 8 dims, keep 4-7; prob has 2 dims, keep 1
-            boxes_per_img = boxes_per_img[:, 4:]
-            prob = prob[:, 1:].squeeze(1)
-
-            boxlist = Boxes(bbox=boxes_per_img, image_size=image_shape, score=prob)
-
-            if self.use_regression:
-                boxlist = boxlist.clip_to_image()
-                bbox, scores = self.filter_results(boxlist.bbox, prob)
-                boxlist.bbox = bbox
-                boxlist.score = scores
-
-            results.append(boxlist)
-
-        return results
