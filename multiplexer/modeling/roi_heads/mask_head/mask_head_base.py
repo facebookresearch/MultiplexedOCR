@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
 import torch
@@ -17,7 +16,7 @@ from .roi_mask_feature_extractor_builder import make_roi_mask_feature_extractor
 
 # from .inference import make_roi_mask_post_processor
 from .roi_mask_post_processor_builder import make_roi_mask_post_processor
-from .roi_mask_predictors_builder import make_roi_mask_predictor
+from .roi_mask_predictor_builder import make_roi_mask_predictor
 
 
 def conv3x3(in_planes, out_planes, stride=1, has_bias=False):

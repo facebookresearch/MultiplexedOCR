@@ -1,16 +1,17 @@
-#!/usr/bin/env python3
+# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
-# from .language_predictors_v0 import V0LanguagePredictor
-# from .language_predictors_v1 import V1LanguagePredictor
-# from .language_predictors_v2 import V2LanguagePredictor
-# from .language_predictors_v3 import V3LanguagePredictor
-# from .language_predictors_v4 import V4LanguagePredictor
-# from .language_predictors_v5 import V5LanguagePredictor
+# from .language_predictor_v0 import V0LanguagePredictor
+from .language_predictor_v1 import V1LanguagePredictor
+
+# from .language_predictor_v2 import V2LanguagePredictor
+# from .language_predictor_v3 import V3LanguagePredictor
+# from .language_predictor_v4 import V4LanguagePredictor
+# from .language_predictor_v5 import V5LanguagePredictor
 
 
 _LANGUAGE_PREDICTOR = {
     # "V0LanguagePredictor": V0LanguagePredictor,
-    # "V1LanguagePredictor": V1LanguagePredictor,
+    "V1LanguagePredictor": V1LanguagePredictor,
     # "V2LanguagePredictor": V2LanguagePredictor,
     # "V3LanguagePredictor": V3LanguagePredictor,
     # "V4LanguagePredictor": V4LanguagePredictor,

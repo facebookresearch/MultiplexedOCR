@@ -6,13 +6,15 @@ import math
 # import numpy as np
 import torch
 from torch import nn
-from warpctc_pytorch import CTCLoss
 
 from multiplexer.layers.res_blocks import res_layer
 
 # from multiplexer.layers import Conv2d
 from multiplexer.utils.chars import num2char as num2char_deprecated
 from multiplexer.utils.languages import lang_code_to_char_map_class
+
+# from warpctc_pytorch import CTCLoss
+
 
 # logger = logging.getLogger(__name__)
 
@@ -187,9 +189,8 @@ class CTCSequencePredictor(nn.Module):
                 ),
             )
 
-        # self.criterion_seq_decoder = nn.CTCLoss(reduction='sum',
-        #                                         zero_infinity=True)
-        self.criterion_seq_decoder = CTCLoss()
+        self.criterion_seq_decoder = nn.CTCLoss(reduction="sum", zero_infinity=True)
+        # self.criterion_seq_decoder = CTCLoss()
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -276,14 +277,16 @@ class CTCSequencePredictor(nn.Module):
             flatten_targets = flatten_targets[flatten_targets != self.num_char + 1].int()
 
             # NOTE: PyTorch CTCLoss needs log_softmax on input
-            # preds = torch.nn.functional.log_softmax(preds, dim=2)
-            # loss_seq_decoder = self.criterion_seq_decoder(
-            #     preds, word_targets, preds_size, length_for_loss
+            # raw_loss_seq_decoder = self.criterion_seq_decoder(
+            #     preds.log_softmax(dim=2), word_targets, preds_size, length_for_loss
             # )
-            # NOTE: use warp_ctc seems to be more stable
             raw_loss_seq_decoder = self.criterion_seq_decoder(
-                preds, flatten_targets.cpu(), preds_size, length_for_loss.cpu()
+                preds.log_softmax(dim=2), flatten_targets.cpu(), preds_size, length_for_loss.cpu()
             )
+            # NOTE: use warp_ctc seems to be more stable
+            # raw_loss_seq_decoder = self.criterion_seq_decoder(
+            #     preds, flatten_targets.cpu(), preds_size, length_for_loss.cpu()
+            # )
             if torch.isnan(raw_loss_seq_decoder) or torch.isinf(raw_loss_seq_decoder):
                 # still getting nan in very rare case but training doesn't seem to be affected
                 from virtual_fs.virtual_io import open

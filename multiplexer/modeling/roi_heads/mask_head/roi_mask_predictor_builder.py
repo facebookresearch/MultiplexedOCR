@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 
-# from .roi_mask_predictors import (
+# from .roi_mask_predictor import (
 #     CharMaskRCNNC4Predictor,
 #     MaskRCNNC4Predictor,
 #     SeqMaskRCNNC4Predictor,
 #     SeqRCNNC4Predictor,
 # )
-from .roi_mask_predictors_multi_seq import MultiSeqMaskRCNNC4Predictor
+from .roi_mask_predictor_multi_seq import MultiSeqMaskRCNNC4Predictor
 
-# from .roi_mask_predictors_multi_seq_1_char_mask import MultiSeq1CharMaskRCNNC4Predictor
-from .roi_mask_predictors_multi_seq_lang import MultiSeqLangMaskRCNNC4Predictor
+# from .roi_mask_predictor_multi_seq_1_char_mask import MultiSeq1CharMaskRCNNC4Predictor
+from .roi_mask_predictor_multi_seq_lang import MultiSeqLangMaskRCNNC4Predictor
 
-# from .roi_mask_predictors_multiplexed import MultiplexedMaskRCNNC4Predictor
-# from .roi_mask_predictors_seq_char_mask import SeqCharMaskRCNNC4Predictor
+# from .roi_mask_predictor_multiplexed import MultiplexedMaskRCNNC4Predictor
+# from .roi_mask_predictor_seq_char_mask import SeqCharMaskRCNNC4Predictor
 
 
 _ROI_MASK_PREDICTOR = {

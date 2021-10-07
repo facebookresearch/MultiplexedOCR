@@ -5,11 +5,9 @@ import random
 import torch
 from torch.nn import functional as F
 
-from multiplexer.modeling.roi_heads.mask_head.roi_mask_predictors_base import (
-    BaseMaskRCNNC4Predictor,
-)
-from multiplexer.modeling.roi_heads.mask_head.roi_seq_predictors_base import BaseSequencePredictor
-from multiplexer.modeling.roi_heads.mask_head.roi_seq_predictors_ctc import CTCSequencePredictor
+from multiplexer.modeling.roi_heads.mask_head.roi_mask_predictor_base import BaseMaskRCNNC4Predictor
+from multiplexer.modeling.roi_heads.mask_head.roi_seq_predictor_base import BaseSequencePredictor
+from multiplexer.modeling.roi_heads.mask_head.roi_seq_predictor_ctc import CTCSequencePredictor
 from multiplexer.utils.languages import LANGUAGE_COMBO, get_language_config
 
 

@@ -16,10 +16,10 @@ from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_base im
 # from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_resnet18_rect_v2 import (
 #     Resnet18RectV2FeatureExtractor,
 # )
-# from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_resnet18_rotated_v0 import (
+# from .roi_mask_feature_extractor_resnet18_rotated_v0 import (
 #     Resnet18RotatedV0FeatureExtractor,
 # )
-# from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_resnet18_square_v0 import (
+# from .roi_mask_feature_extractor_resnet18_square_v0 import (
 #     Resnet18SquareV0FeatureExtractor,
 # )
 # from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_rotated import (

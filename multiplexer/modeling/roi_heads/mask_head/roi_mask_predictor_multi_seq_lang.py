@@ -10,7 +10,7 @@ from torch.nn import functional as F
 from multiplexer.modeling.roi_heads.mask_head.language_predictor_builder import (
     make_language_predictor,
 )
-from multiplexer.modeling.roi_heads.mask_head.roi_mask_predictors_multi_seq import (
+from multiplexer.modeling.roi_heads.mask_head.roi_mask_predictor_multi_seq import (
     MultiSeqMaskRCNNC4Predictor,
 )
 from multiplexer.structures.word_result import WordResult
