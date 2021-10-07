@@ -2,8 +2,8 @@ from typing import List
 
 import torch
 
-from multiplexer.modeling.roi_heads.box_head.box_head import build_roi_box_head
-from multiplexer.modeling.roi_heads.mask_head.mask_head_builder import build_roi_mask_head
+from multiplexer.modeling.roi_heads.box_head import build_roi_box_head
+from multiplexer.modeling.roi_heads.mask_head import build_roi_mask_head
 from multiplexer.structures.bounding_box import Boxes
 
 from .build import ROI_HEADS_REGISTRY

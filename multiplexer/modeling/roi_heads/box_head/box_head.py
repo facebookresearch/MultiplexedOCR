@@ -11,10 +11,10 @@ from multiplexer.modeling.roi_heads.box_head.roi_box_post_processor_builder impo
 )
 from multiplexer.modeling.roi_heads.box_head.roi_box_predictors import make_roi_box_predictor
 
-from .build import BOX_HEAD_REGISTRY
+from .build import ROI_BOX_HEAD_REGISTRY
 
 
-@BOX_HEAD_REGISTRY.register()
+@ROI_BOX_HEAD_REGISTRY.register()
 class ROIBoxHead(torch.nn.Module):
     """
     Generic Box Head class.
