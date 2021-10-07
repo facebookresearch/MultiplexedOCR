@@ -4,7 +4,7 @@ import torch
 
 from multiplexer.modeling.roi_heads.box_head import build_roi_box_head
 from multiplexer.modeling.roi_heads.mask_head import build_roi_mask_head
-from multiplexer.structures.bounding_box import Boxes
+from multiplexer.structures import BoxList
 
 from .build import ROI_HEADS_REGISTRY
 
@@ -28,7 +28,7 @@ class CombinedROIHeads(torch.nn.Module):
         if cfg.MODEL.MASK_ON and cfg.MODEL.ROI_MASK_HEAD.SHARE_BOX_FEATURE_EXTRACTOR:
             self.mask.feature_extractor = self.box.feature_extractor
 
-    def forward(self, features: List[torch.Tensor], proposals: List[Boxes], targets=None):
+    def forward(self, features: List[torch.Tensor], proposals: List[BoxList], targets=None):
         losses = {}
 
         # TODO rename x to roi_box_features, if it doesn't increase memory consumption
