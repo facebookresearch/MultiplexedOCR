@@ -142,14 +142,6 @@ class CharMap(object):
         return False
 
     @classmethod
-    def get_backup_json(cls):
-        # read-only backup json
-        names = cls.json_file.split("/")
-        names[-1] = "backup/2020-07-26/{}".format(names[-1])
-        backup_json = "/".join(names)
-        return backup_json
-
-    @classmethod
     def get_new_json(cls):
         # write-only candidate new json that contains more characters
         basename = os.path.basename(cls.json_file)
@@ -189,22 +181,8 @@ class CharMap(object):
                 cls, "json_file"
             ), f"Please call init() with char_map_path for {cls.__name__} first"
             if os.path.isfile(cls.json_file):
-                try:
-                    with open(cls.json_file) as f:
-                        cls.char_map = json.load(f)
-                except (json.decoder.JSONDecodeError, OSError):
-                    backup_json = cls.get_backup_json()
-                    if os.path.isfile(backup_json):
-                        print(
-                            "Error loading {}, trying backup json {}".format(
-                                cls.json_file, backup_json
-                            )
-                        )
-                        with open(backup_json) as f_backup:
-                            try:
-                                cls.char_map = json.load(f_backup)
-                            except json.decoder.JSONDecodeError:
-                                print("Error loading {}".format(backup_json))
+                with open(cls.json_file) as f:
+                    cls.char_map = json.load(f)
 
                 cls.normalize()
                 logger.info(

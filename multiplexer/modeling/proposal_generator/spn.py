@@ -152,9 +152,9 @@ class SEGPostProcessor(torch.nn.Module):
         super(SEGPostProcessor, self).__init__()
 
         self.top_n = cfg.MODEL.SEG.TOP_N_TRAIN if is_train else cfg.MODEL.SEG.TOP_N_TEST
-        self.binary_thresh = (cfg.MODEL.SEG.BINARY_THRESH,)
-        self.box_thresh = (cfg.MODEL.SEG.BOX_THRESH,)
-        self.min_size = (cfg.MODEL.SEG.MIN_SIZE,)
+        self.binary_thresh = cfg.MODEL.SEG.BINARY_THRESH
+        self.box_thresh = cfg.MODEL.SEG.BOX_THRESH
+        self.min_size = cfg.MODEL.SEG.MIN_SIZE
         self.cfg = cfg
         expand_method_map = {"constant": 0, "log_a": 1}
         self.expand_method = expand_method_map[cfg.MODEL.SEG.EXPAND_METHOD]
