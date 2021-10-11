@@ -16,6 +16,7 @@ pip install pyclipper
 conda install shapely
 conda install -c conda-forge pycocotools
 conda install -c conda-forge ftfy
+pip install tensorboard
 pip install black
 pip install isort==5.9.3
 pip install flake8==3.9.2
@@ -40,6 +41,12 @@ python -m demo.demo --config-file configs/seg_rec_poly_fuse_feature_once.yaml
 The following is to be supported (fixing the \_BASE\_ field in config)
 ```
 python -m demo.demo --config-file configs/multi_seq_lang_v2.yaml
+```
+
+## Training
+
+```
+python3 -m torch.distributed.run --nproc_per_node=8 tools/train_net.py --config-file /checkpoint/jinghuang/multiplexer/flow/20201111/ocr.1k4fu05s/config.yaml
 ```
 
 ## Citing Multiplexer
