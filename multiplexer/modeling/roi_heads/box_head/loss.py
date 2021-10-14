@@ -6,7 +6,7 @@ from torch.nn import functional as F
 from multiplexer.layers import cat, smooth_l1_loss
 from multiplexer.modeling.box_regression import Box2BoxTransform
 from multiplexer.modeling.matcher import Matcher
-from multiplexer.modeling.sampling import subsample_labels
+from multiplexer.modeling.sampling import subsample_labels_old
 from multiplexer.structures import pairwise_iou
 
 
@@ -84,11 +84,12 @@ class FastRCNNLossComputation(object):
 
         labels, regression_targets = self.prepare_targets(proposals, targets)
 
-        sampled_pos_inds, sampled_neg_inds = subsample_labels(
+        # TODO: replace subsample_labels_old with subsample_labels
+        sampled_pos_inds, sampled_neg_inds = subsample_labels_old(
             labels=labels,
             num_samples=self.batch_size_per_image,
             positive_fraction=self.positive_fraction,
-            bg_label=0,
+            # bg_label=0,
         )
         # print('sampled_pos_inds:', sampled_pos_inds[0].sum())
         # print('sampled_neg_inds:', sampled_neg_inds[0].sum())

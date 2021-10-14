@@ -161,6 +161,7 @@ class DatasetCatalog(object):
                 "imgs_dir": os.path.join(MLT19_ROOT, "train", "imgs"),
                 "gts_dir": os.path.join(MLT19_ROOT, "train", "gts"),
                 "expected_imgs_in_dir": 10000,
+                "split": "train",
             },
         },
         # Note: mlt19_val_train and mlt19_val_test are exactly the same dataset

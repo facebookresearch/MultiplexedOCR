@@ -72,6 +72,9 @@ class IcdarDataset(PolygonOcrDataset):
             if has_positive:
                 new_image_lists.append(img_path)
         return new_image_lists
+    
+    def get_gt_path_from_im_name(self, im_name):
+        return os.path.join(self.gts_dir, "gt_" + im_name.split(".")[0] + ".txt")
 
     def get_item_name(self, item):
         return self.image_lists[item]
@@ -97,7 +100,8 @@ class IcdarDataset(PolygonOcrDataset):
                 raise e
 
         if self.gts_dir is not None:
-            gt_path = os.path.join(self.gts_dir, "gt_" + im_name.split(".")[0] + ".txt")
+            gt_path = self.get_gt_path_from_im_name(im_name)
+            # print(f"im_name = {im_name}, gt_path = {gt_path}")
             try:
                 gt = self.load_gt_from_txt(gt_path)
             except FileNotFoundError as e:

@@ -53,6 +53,7 @@ class Icdar19MLTDataset(IcdarDataset):
             "bn",
             "hi",
         ]
+        self.split = split
         self.image_lists = self.get_image_list(split, expected_imgs_in_dir)
 
         self.gts_dir = gts_dir
@@ -68,9 +69,7 @@ class Icdar19MLTDataset(IcdarDataset):
         for img_path in self.image_lists:
             has_positive = False
             im_name = os.path.basename(img_path)
-            gt_path = os.path.join(self.gts_dir, im_name + ".txt")
-            if not os.path.isfile(gt_path):
-                gt_path = os.path.join(self.gts_dir, "gt_" + im_name.split(".")[0] + ".txt")
+            gt_path = self.get_gt_path_from_im_name(im_name)
             lines = open(gt_path, "r").readlines()
             for line in lines:
                 strs, loc, _language = self.line2boxes(line)
@@ -168,6 +167,12 @@ class Icdar19MLTDataset(IcdarDataset):
         output_image_list = [os.path.join(self.imgs_dir, img) for img in output_image_list]
 
         return output_image_list
+    
+    def get_gt_path_from_im_name(self, im_name):
+        if self.split == "train":
+            return os.path.join(self.gts_dir, im_name.split(".")[0] + ".txt")
+        elif self.split == "val":
+            return os.path.join(self.gts_dir, "gt" + im_name.split(".")[0][3:] + ".txt")
 
     def load_gt_from_txt(self, gt_path):
         words, boxes, char_boxes, segmentations, labels, languages = (

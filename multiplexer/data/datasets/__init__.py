@@ -1,7 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
 # from .coco import COCODataset
-# from .concat_dataset import ConcatDataset, MixDataset
+from .concat_dataset import ConcatDataset, MixDataset
 from .icdar import IcdarDataset
 
 # from .icdar13 import Icdar13Dataset
