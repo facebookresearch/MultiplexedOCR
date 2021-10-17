@@ -9,11 +9,11 @@ import traceback
 import torch
 import torch.distributed as dist
 
-# from apex import amp
+from apex import amp
 from multiplexer.utils.comm import get_world_size
 from multiplexer.utils.metric_logger import MetricLogger
 
-logger = logging.getLogger("d2ocr.trainer")
+logger = logging.getLogger("multiplexer.train_loop")
 
 
 def reduce_loss_dict(loss_dict):
@@ -161,11 +161,11 @@ def do_train(
 
         optimizer.zero_grad()
 
-        losses.backward()
+        # losses.backward()
         # Note: If mixed precision is not used, this ends up doing nothing
         # Otherwise apply loss scaling for mixed-precision recipe
-        # with amp.scale_loss(losses, optimizer) as scaled_losses:
-        #     scaled_losses.backward()
+        with amp.scale_loss(losses, optimizer) as scaled_losses:
+            scaled_losses.backward()
         if cfg.SOLVER.USE_ADAM:
             torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
         optimizer.step()

@@ -26,10 +26,10 @@ from virtual_fs.virtual_io import open
 # from multiplexer.utils.comm import get_world_size, synchronize
 
 
-# try:
-#     from apex import amp
-# except ImportError:
-#     raise ImportError("Use APEX for multi-precision via apex.amp")
+try:
+    from apex import amp
+except ImportError:
+    raise ImportError("Use APEX for multi-precision via apex.amp")
 
 
 def train(cfg, local_rank, distributed, tb_logger):
@@ -42,9 +42,9 @@ def train(cfg, local_rank, distributed, tb_logger):
     scheduler = make_lr_scheduler(cfg, optimizer)
 
     # Initialize mixed-precision training
-    # use_mixed_precision = cfg.DTYPE == "float16"
-    # amp_opt_level = "O1" if use_mixed_precision else "O0"
-    # model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
+    use_mixed_precision = cfg.DTYPE == "float16"
+    amp_opt_level = "O1" if use_mixed_precision else "O0"
+    model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
 
     if distributed:
         model = torch.nn.parallel.DistributedDataParallel(
@@ -157,8 +157,9 @@ def parse_args(in_args=None):
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Training")
     parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
     parser.add_argument("--eval-only", action="store_true", help="perform evaluation only")
+    # parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument("--no-color", action="store_true", help="disable colorful logging")
-    parser.add_argument("--num-gpus", type=int, default=1, help="number of gpus per machine")
+    parser.add_argument("--num-gpus", type=int, default=8, help="number of gpus per machine")
     parser.add_argument("--num-machines", type=int, default=1)
     parser.add_argument(
         "--machine-rank",
@@ -167,7 +168,8 @@ def parse_args(in_args=None):
         help="the rank of this machine (unique per machine)",
     )
     port = 2 ** 15 + 2 ** 14 + hash(os.getuid()) % 2 ** 14
-    parser.add_argument("--dist-url", default="tcp://127.0.0.1:{}".format(port))
+    # parser.add_argument("--dist-url", default="tcp://127.0.0.1:{}".format(port))
+    parser.add_argument("--dist-url", default="auto")
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
@@ -194,6 +196,34 @@ def detectron2_launch(args):
         ),
     )
 
+def pytorch_launch(args):
+    cfg.merge_from_file(args.config_file)
+    cfg.merge_from_list(args.opts)
+    cfg.freeze()
+    
+    args.distributed = args.num_gpus > 1
+
+    output_dir = cfg.OUTPUT_DIR
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+
+    logger = setup_logger("multiplexer", output_dir, get_rank())
+    logger.info("Using {} GPUs".format(args.num_gpus))
+    logger.info(args)
+
+    logger.info("Collecting env info (might take some time)")
+    logger.info("\n" + collect_env_info())
+
+    logger.info("Loaded configuration file {}".format(args.config_file))
+    with open(args.config_file, "r") as cf:
+        config_str = "\n" + cf.read()
+        logger.info(config_str)
+    logger.info("Running with config:\n{}".format(cfg))
+
+    tb_logger = Logger(cfg.OUTPUT_DIR, get_rank())
+    train(cfg, args.local_rank, args.distributed, tb_logger)
 
 if __name__ == "__main__":
     detectron2_launch(parse_args())
+    # pytorch_launch(parse_args())
+    

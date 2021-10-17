@@ -232,8 +232,8 @@ class SEGPostProcessor(torch.nn.Module):
         N, height, width = pred.shape[0], pred.shape[2], pred.shape[3]
         # torch.cuda.synchronize()
         # start_time = time.time()
-        bitmap_numpy = bitmap.cpu().numpy()  # The first channel
-        pred_map_numpy = pred.cpu().numpy()
+        bitmap_numpy = bitmap.cpu().detach().numpy()  # The first channel
+        pred_map_numpy = pred.cpu().detach().numpy()
         # torch.cuda.synchronize()
         # end_time = time.time()
         # print('gpu2numpy time:', end_time - start_time)

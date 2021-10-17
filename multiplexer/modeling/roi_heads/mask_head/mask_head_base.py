@@ -7,8 +7,9 @@ from multiplexer.layers import cat
 
 # from multiplexer.layers import Conv2d
 from multiplexer.modeling.matcher import Matcher
-from multiplexer.structures import BoxList, pairwise_iou
+from multiplexer.structures import BoxList, pairwise_iou, LanguageList
 from multiplexer.utils.languages import get_language_config, lang_code_to_char_map_class
+
 
 from .build import ROI_MASK_HEAD_REGISTRY
 from .loss import make_roi_mask_loss_evaluator
@@ -346,7 +347,7 @@ class BaseROIMaskHead(torch.nn.Module):
 
             decoder_targets = cat(decoder_targets, dim=0)
             word_targets = cat(word_targets, dim=0)
-            gt_language_targets = cat(gt_language_targets, dim=0)
+            gt_language_targets = LanguageList.concat(gt_language_targets)
 
             assert torch.all(decoder_targets >= -2), "\n".join(
                 [
