@@ -1,13 +1,10 @@
 import ast
 import datetime
 import json
-import subprocess
-import sys
 
 import yaml
 
 from virtual_fs import virtual_os as os
-from virtual_fs import virtual_shutil as shutil
 from virtual_fs import virtual_tempfile as tempfile
 from virtual_fs.virtual_io import open
 
@@ -124,19 +121,13 @@ def get_single_job_cfg_value(value_str, args, decoder="job=value"):
                 if len(key_value_list) == 1:
                     key = key_value_list[0]
                     key_value_dict[key] = key  # special case: key == value
-                    assert (
-                        key in args.job_list
-                    ), f"Unknown job-key in {value_str}: {key}"
+                    assert key in args.job_list, f"Unknown job-key in {value_str}: {key}"
                 else:
-                    assert (
-                        len(key_value_list) == 2
-                    ), f"Invalid key_value_pair: {key_value_pair}"
+                    assert len(key_value_list) == 2, f"Invalid key_value_pair: {key_value_pair}"
                     key = key_value_list[0]
                     key_value_dict[key] = key_value_list[1]
                     if key != "default":
-                        assert (
-                            key in args.job_list
-                        ), f"Unknown job-key in {value_str}: {key}"
+                        assert key in args.job_list, f"Unknown job-key in {value_str}: {key}"
 
             if args.job_list[args.job_id] in key_value_dict:
                 return key_value_dict[args.job_list[args.job_id]]
@@ -164,9 +155,7 @@ def decode_cfg_value(v):
             # ast.literal_eval('2019-10-10')
             # will return 1999 instead of a string
             # See https://bugs.python.org/issue31778
-            print(
-                "Binary op found in argument value {}, treating it as string".format(v)
-            )
+            print("Binary op found in argument value {}, treating it as string".format(v))
             return v
         # Try to interpret `v` as a:
         # string, number, tuple, list, dict, boolean, or None
@@ -203,9 +192,7 @@ def merge_a_into_b(a, b):
     # merge dict a into dict b. values in a will overwrite b
     for k, v in a.items():
         if isinstance(v, dict) and k in b:
-            assert isinstance(b[k], dict), "Cannot inherit key '{}' from base!".format(
-                k
-            )
+            assert isinstance(b[k], dict), "Cannot inherit key '{}' from base!".format(k)
             merge_a_into_b(v, b[k])
         else:
             b[k] = v
@@ -247,9 +234,7 @@ def create_config_file(args):
 
     if hasattr(args, "min_size_train") and args.min_size_train is not None:
         min_size_train = get_single_job_cfg_value(args.min_size_train, args)
-        cfg["INPUT"]["MIN_SIZE_TRAIN"] = [
-            int(size) for size in min_size_train.split(":")
-        ]
+        cfg["INPUT"]["MIN_SIZE_TRAIN"] = [int(size) for size in min_size_train.split(":")]
 
     if hasattr(args, "solver_steps") and args.solver_steps is not None:
         solver_steps = get_single_job_cfg_value(args.solver_steps, args)
@@ -264,9 +249,7 @@ def create_config_file(args):
         cfg["MODEL"]["LANGUAGE_HEAD"]["NUM_CLASSES"] = len(language_head_list)
 
     if args.language_heads_enabled is not None:
-        language_heads_enabled = get_single_job_cfg_value(
-            args.language_heads_enabled, args
-        )
+        language_heads_enabled = get_single_job_cfg_value(args.language_heads_enabled, args)
         enabled_language_head_list = get_language_head_list(language_heads_enabled)
         cfg["SEQUENCE"]["LANGUAGES_ENABLED"] = enabled_language_head_list
         cfg["SEQUENCE"]["NUM_SEQ_HEADS"] = len(enabled_language_head_list)
@@ -297,6 +280,3 @@ def create_config_file(args):
         yaml.safe_dump(cfg, f, default_flow_style=False)
     print("Final YAML config: {}".format(cfg_yaml))
     return cfg_yaml
-
-
-

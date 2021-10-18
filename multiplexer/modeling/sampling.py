@@ -8,19 +8,19 @@ __all__ = ["subsample_labels"]
 
 def subsample_labels_old(labels: torch.Tensor, num_samples: int, positive_fraction: float):
     """
-        Arguments:
-            labels: list of tensors containing -1, 0 or positive values.
-                Each tensor corresponds to a specific image.
-                -1 values are ignored, 0 are considered as negatives and > 0 as
-                positives.
+    Arguments:
+        labels: list of tensors containing -1, 0 or positive values.
+            Each tensor corresponds to a specific image.
+            -1 values are ignored, 0 are considered as negatives and > 0 as
+            positives.
 
-        Returns:
-            pos_idx (list[tensor])
-            neg_idx (list[tensor])
+    Returns:
+        pos_idx (list[tensor])
+        neg_idx (list[tensor])
 
-        Returns two lists of binary masks for each image.
-        The first list contains the positive elements that were selected,
-        and the second list the negative example.
+    Returns two lists of binary masks for each image.
+    The first list contains the positive elements that were selected,
+    and the second list the negative example.
     """
     pos_idx = []
     neg_idx = []
@@ -43,12 +43,8 @@ def subsample_labels_old(labels: torch.Tensor, num_samples: int, positive_fracti
         neg_idx_per_image = negative[perm2]
 
         # create binary mask from indices
-        pos_idx_per_image_mask = torch.zeros_like(
-            matched_idxs_per_image, dtype=torch.uint8
-        )
-        neg_idx_per_image_mask = torch.zeros_like(
-            matched_idxs_per_image, dtype=torch.uint8
-        )
+        pos_idx_per_image_mask = torch.zeros_like(matched_idxs_per_image, dtype=torch.uint8)
+        neg_idx_per_image_mask = torch.zeros_like(matched_idxs_per_image, dtype=torch.uint8)
         pos_idx_per_image_mask[pos_idx_per_image] = 1
         neg_idx_per_image_mask[neg_idx_per_image] = 1
 

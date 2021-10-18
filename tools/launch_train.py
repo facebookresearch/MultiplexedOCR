@@ -1,28 +1,20 @@
-import os, sys
-multiplexer_dir = os.path.abspath('./')
-print(multiplexer_dir)
-# multiplexer_dir = "/private/home/jinghuang/code/ocr/multiplexer/"
-if multiplexer_dir not in sys.path:
-    sys.path.append(multiplexer_dir)
-
 import argparse
 import datetime
+import getpass
 
 import config_utils
 import submitit_utils
-from virtual_fs import virtual_os as os
+
 from tools.train_net import detectron2_launch
-import getpass
+from virtual_fs import virtual_os as os
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Launch text spotting training workflow"
-    )
+    parser = argparse.ArgumentParser(description="Launch text spotting training workflow")
 
     parser.add_argument(
         "--base_work_dir",
-        default=f"/checkpoint/{getpass.getuser()}/flow",
+        default=f"/checkpoint/{getpass.getuser()}/flow/multiplexer/train",
         help="Base working directory",
     )
     parser.add_argument(
@@ -32,9 +24,7 @@ def parse_args():
     )
 
     parser.add_argument("--dataset", default=None, help="Dataset name")
-    parser.add_argument(
-        "--dataset_ratios", default=None, help="Dataset ratios, e.g., 1:2:5"
-    )
+    parser.add_argument("--dataset_ratios", default=None, help="Dataset ratios, e.g., 1:2:5")
     parser.add_argument("--dist-url", default="auto")
     parser.add_argument(
         "--partition",
@@ -43,13 +33,9 @@ def parse_args():
     )
     parser.add_argument("--eval-only", action="store_true")
 
-    parser.add_argument(
-        "--gpu-type", default="volta32gb", choices=["volta32gb"]
-    )
+    parser.add_argument("--gpu-type", default="volta32gb", choices=["volta32gb"])
     parser.add_argument("--language_heads", default=None, help="Language heads")
-    parser.add_argument(
-        "--language_heads_enabled", default=None, help="Enabled language heads"
-    )
+    parser.add_argument("--language_heads_enabled", default=None, help="Enabled language heads")
     parser.add_argument(
         "--machine-rank",
         type=int,
@@ -64,12 +50,8 @@ def parse_args():
     parser.add_argument("--name", default="spn_train", help="Flow name")
     parser.add_argument("--no-build", action="store_true")
     parser.add_argument("--num_machines", default=1, type=int)
-    parser.add_argument(
-        "--num_cpus", default=40, type=int, help="Number of CPUs **per machine**"
-    )
-    parser.add_argument(
-        "--num_gpus", default=8, type=int, help="Number of GPUs **per machine**"
-    )
+    parser.add_argument("--num_cpus", default=40, type=int, help="Number of CPUs **per machine**")
+    parser.add_argument("--num_gpus", default=8, type=int, help="Number of GPUs **per machine**")
     parser.add_argument("--ram-gb", default=200, type=int)
     parser.add_argument("--retry", default=1, type=int, help="Number of retries")
     parser.add_argument(
@@ -110,7 +92,12 @@ def parse_args():
         default="configs",
         help="The directory containing YAML configuration file",
     )
-    parser.add_argument("opts", help="See config/defaults.py for all options", default=None, nargs=argparse.REMAINDER)
+    parser.add_argument(
+        "opts",
+        help="See config/defaults.py for all options",
+        default=None,
+        nargs=argparse.REMAINDER,
+    )
     args = parser.parse_args()
 
     assert args.num_machines >= 1
@@ -151,20 +138,9 @@ def parse_args():
                 os.makedirs(work_dir, exist_ok=False)
                 args.work_dir_list.append(work_dir)
                 break
-        assert (
-            id < max_id
-        ), f"Could not find an available id for {batch_job_dir}/{job}"
-
+        assert id < max_id, f"Could not find an available id for {batch_job_dir}/{job}"
 
     args.forwarded_opts = ""
-
-    # Temporary alert for migration to newer yaml configs
-    assert args.yaml != "multi_seq_lang.yaml", (
-        "multi_seq_lang.yaml has been renamed as multi_seq_lang_v1.yaml."
-        "Please use multi_seq_lang_v2.yaml for more concise char maps that are ordered by frequency."
-        "You can set DATASETS.AUG=True to enable default data augmentation"
-        "Also, you can use multi_seq_lang_v2_aug.yaml to play with experimental CropperV2 augmentation"
-    )
 
     return args
 
@@ -183,7 +159,7 @@ if __name__ == "__main__":
         args.config_file = config_utils.create_config_file(args)
 
         if args.run_type == "flow":
-            submitit_utils.launch_single_node(detectron2_launch, args)
+            submitit_utils.launch_job(detectron2_launch, args)
         else:
+            assert args.run_type == "local"
             detectron2_launch(args)
-

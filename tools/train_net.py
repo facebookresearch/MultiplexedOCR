@@ -167,7 +167,7 @@ def parse_args(in_args=None):
         default=0,
         help="the rank of this machine (unique per machine)",
     )
-    port = 2 ** 15 + 2 ** 14 + hash(os.getuid()) % 2 ** 14
+    # port = 2 ** 15 + 2 ** 14 + hash(os.getuid()) % 2 ** 14
     # parser.add_argument("--dist-url", default="tcp://127.0.0.1:{}".format(port))
     parser.add_argument("--dist-url", default="auto")
     parser.add_argument(
@@ -196,11 +196,12 @@ def detectron2_launch(args):
         ),
     )
 
+
 def pytorch_launch(args):
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
-    
+
     args.distributed = args.num_gpus > 1
 
     output_dir = cfg.OUTPUT_DIR
@@ -223,7 +224,7 @@ def pytorch_launch(args):
     tb_logger = Logger(cfg.OUTPUT_DIR, get_rank())
     train(cfg, args.local_rank, args.distributed, tb_logger)
 
+
 if __name__ == "__main__":
     detectron2_launch(parse_args())
     # pytorch_launch(parse_args())
-    

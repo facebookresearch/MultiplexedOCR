@@ -13,7 +13,6 @@ from multiplexer.structures import LanguageList, pairwise_iou
 from multiplexer.structures.bounding_box import BoxList
 from multiplexer.utils.languages import get_language_config, lang_code_to_char_map_class
 
-
 from .build import ROI_MASK_HEAD_REGISTRY
 from .loss import make_roi_mask_loss_evaluator
 from .roi_mask_feature_extractor_builder import make_roi_mask_feature_extractor

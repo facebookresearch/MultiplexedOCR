@@ -1,6 +1,7 @@
 import submitit
 
-def launch_single_node(func, args):
+
+def launch_job(func, args):
     executor = submitit.AutoExecutor(folder=args.work_dir)
 
     executor.update_parameters(
@@ -10,13 +11,11 @@ def launch_single_node(func, args):
         # tasks_per_node=1,
         # cpus_per_task=args.workers,
         # nodes=args.num_machines,
-        timeout_min=3*24*60,
+        timeout_min=3 * 24 * 60,
         slurm_partition=args.partition,
         slurm_constraint=args.gpu_type,
         name=args.name,
     )
 
     job = executor.submit(func, args)
-    print(f"Job id: {job.job_id}")
-
-    
+    print(f"Job id: j{job.job_id}")

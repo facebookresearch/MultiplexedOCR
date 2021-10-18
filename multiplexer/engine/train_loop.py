@@ -8,8 +8,8 @@ import traceback
 
 import torch
 import torch.distributed as dist
-
 from apex import amp
+
 from multiplexer.utils.comm import get_world_size
 from multiplexer.utils.metric_logger import MetricLogger
 

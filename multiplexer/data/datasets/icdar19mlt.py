@@ -167,7 +167,7 @@ class Icdar19MLTDataset(IcdarDataset):
         output_image_list = [os.path.join(self.imgs_dir, img) for img in output_image_list]
 
         return output_image_list
-    
+
     def get_gt_path_from_im_name(self, im_name):
         if self.split == "train":
             return os.path.join(self.gts_dir, im_name.split(".")[0] + ".txt")

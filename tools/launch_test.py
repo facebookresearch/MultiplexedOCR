@@ -1,9 +1,10 @@
 import argparse
-import subprocess
+import getpass
 
 import config_utils
 import submitit_utils
-import os
+
+from tools.test_net import detectron2_launch
 
 
 def parse_args():
@@ -11,37 +12,34 @@ def parse_args():
 
     parser.add_argument(
         "--base_work_dir",
-        default=f"/checkpoint/{os.getusername()}/flow",
+        default=f"/checkpoint/{getpass.getuser()}/flow/multiplexer/test",
         help="Base working directory",
     )
 
     parser.add_argument("--dataset", default=None, help="Dataset name")
+    parser.add_argument("--dataset_ratios", default=None, help="Dataset ratios, e.g., 1:2:5")
+    parser.add_argument("--dist-url", default="auto")
+    parser.add_argument("--eval-only", action="store_true")
+    parser.add_argument("--gpu-type", default="volta32gb", choices=["volta32gb"])
+    parser.add_argument("--language_heads", default=None, help="Language heads")
+    parser.add_argument("--language_heads_enabled", default=None, help="Enabled language heads")
     parser.add_argument(
-        "--dataset_ratios", default=None, help="Dataset ratios, e.g., 1:2:5"
+        "--machine-rank",
+        type=int,
+        default=0,
+        help="the rank of this machine (unique per machine)",
     )
+    parser.add_argument("--name", default="spn_test", help="Flow name")
+    parser.add_argument("--num_machines", default=1, type=int)
+    parser.add_argument("--num_cpus", default=40, type=int, help="Number of CPUs **per machine**")
+    parser.add_argument("--num_gpus", default=8, type=int, help="Number of GPUs **per machine**")
     parser.add_argument(
         "--partition",
         default="learnaccel",
         help="partition for the flow job. Examples: learnaccel, devaccel",
     )
-    parser.add_argument(
-        "--gpu-type", default="volta32gb", choices=["volta32gb"]
-    )
-    parser.add_argument("--eval-only", action="store_true")
-    parser.add_argument("--num_machines", default=1, type=int)
-    parser.add_argument(
-        "--num_cpus", default=40, type=int, help="Number of CPUs **per machine**"
-    )
-    parser.add_argument(
-        "--num_gpus", default=8, type=int, help="Number of GPUs **per machine**"
-    )
     parser.add_argument("--ram-gb", default=200, type=int)
     parser.add_argument("--retry", default=1, type=int, help="Number of retries")
-    parser.add_argument("--language_heads", default=None, help="Language heads")
-    parser.add_argument(
-        "--language_heads_enabled", default=None, help="Enabled language heads"
-    )
-    parser.add_argument("--name", default="spn_test", help="Flow name")
     parser.add_argument(
         "--run_type",
         default="flow",
@@ -62,9 +60,7 @@ def parse_args():
         help="Work directory (if none, a random remote work_dir will be created)",
     )
 
-    parser.add_argument(
-        "--yaml", default="config.yaml", help="Default YAML configuration file"
-    )
+    parser.add_argument("--yaml", default="config.yaml", help="Default YAML configuration file")
 
     parser.add_argument(
         "--yaml_dir",
@@ -119,25 +115,26 @@ if __name__ == "__main__":
     args = parse_args()
 
     print("Args: {}".format(args))
-    binary_file = config_utils.create_test_binary_file(args)
+    # binary_file = config_utils.create_test_binary_file(args)
     for job_id in range(args.job_num):
         args.dataset = args.job_list[job_id]
         args.work_dir = args.work_dir_list[job_id]
         args.name = args.name_list[job_id]
-        config_file = config_utils.create_config_file(args)
+        args.config_file = config_utils.create_config_file(args)
 
         if args.run_type == "flow":
-            submitit_utils.launch_single_node(args, binary_file, config_file)
+            submitit_utils.launch_job(detectron2_launch, args)
         else:
             assert args.run_type == "local"
-            run_cmd = " ".join(
-                [
-                    binary_file,
-                    f"--num-gpus {args.num_gpus}",
-                    f"--config-file {config_file}",
-                    f"{args.forwarded_opts}",
-                ]
-            )
+            detectron2_launch(args)
+#             run_cmd = " ".join(
+#                 [
+#                     binary_file,
+#                     f"--num-gpus {args.num_gpus}",
+#                     f"--config-file {config_file}",
+#                     f"{args.forwarded_opts}",
+#                 ]
+#             )
 
-            print("Run command: {}".format(run_cmd))
-            subprocess.check_call(run_cmd, stderr=subprocess.STDOUT, shell=True)
+#             print("Run command: {}".format(run_cmd))
+#             subprocess.check_call(run_cmd, stderr=subprocess.STDOUT, shell=True)

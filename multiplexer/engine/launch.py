@@ -104,11 +104,13 @@ def _distributed_worker(
         logger = logging.getLogger(__name__)
         logger.error("Process group URL: {}".format(dist_url))
         raise e
+
+    assert num_gpus_per_machine <= torch.cuda.device_count()
+
     # synchronize is needed here to prevent a possible timeout after calling init_process_group
     # See: https://github.com/facebookresearch/maskrcnn-benchmark/issues/172
     comm.synchronize()
 
-    assert num_gpus_per_machine <= torch.cuda.device_count()
     torch.cuda.set_device(local_rank)
 
     # Setup the local process group (which contains ranks within the same machine)

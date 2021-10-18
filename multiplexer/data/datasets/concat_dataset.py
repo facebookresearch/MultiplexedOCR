@@ -28,9 +28,7 @@ class MixDataset(object):
     def __init__(self, datasets, ratios):
         assert len(datasets) == len(
             ratios
-        ), "Number of datasets ({}) vs ratios ({}) mismatch!".format(
-            len(datasets), len(ratios)
-        )
+        ), "Number of datasets ({}) vs ratios ({}) mismatch!".format(len(datasets), len(ratios))
 
         self.datasets = datasets
         weighted_ratios = [ratio * len(dataset) for (ratio, dataset) in zip(ratios, datasets)]

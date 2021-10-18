@@ -1,6 +1,8 @@
 import logging
 import os
 import random
+import shutil
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,7 @@ class UnifiedFileSystem:
             return os.access(path, mode)
 
         raise NotImplementedError(f"unrecognized path_struct: {path_struct}")
-        
+
     def copy2(self, src, dst):
         logger.info(f"Copying {src} to {dst}")
         path_struct_src = self.get_path_struct(src)
@@ -28,7 +30,7 @@ class UnifiedFileSystem:
                 raise NotImplementedError(f"unrecognized path_struct: {path_struct_dst}")
         else:
             raise NotImplementedError(f"unrecognized path_struct: {path_struct_src}")
-            
+
     def copytree(self, src, dst, symlinks=False, ignore=None):
         logger.info(f"Copying {src} to {dst}")
         path_struct_src = self.get_path_struct(src)
@@ -75,7 +77,7 @@ class UnifiedFileSystem:
             path = os.path.expanduser(path)
 
         return {"local": path}
-    
+
     def get_random_str(self, length):
         # get random string without repeating letters
         return "".join(random.sample(string.ascii_lowercase, length))
@@ -105,7 +107,7 @@ class UnifiedFileSystem:
             return os.makedirs(name=path_struct["local"], exist_ok=exist_ok)
 
         raise NotImplementedError(f"unrecognized path_struct: {path_struct}")
-    
+
     def mkdtemp(self, prefix):
         path = prefix + self.get_random_str(6)
         self.makedirs(path)

@@ -72,7 +72,7 @@ class IcdarDataset(PolygonOcrDataset):
             if has_positive:
                 new_image_lists.append(img_path)
         return new_image_lists
-    
+
     def get_gt_path_from_im_name(self, im_name):
         return os.path.join(self.gts_dir, "gt_" + im_name.split(".")[0] + ".txt")
 
