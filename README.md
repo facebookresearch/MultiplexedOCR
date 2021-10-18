@@ -11,7 +11,9 @@ conda activate multiplexer
 pip install yacs==0.1.8  # Note: conda only has yacs v0.1.6 now
 pip install numpy
 pip install opencv-python
-conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+# run `nvcc --version` to decide the cudatoolkit version
+
+conda install pytorch torchvision torchaudio cudatoolkit=10.1 -c pytorch
 pip install pyclipper
 conda install shapely
 conda install -c conda-forge pycocotools
@@ -47,9 +49,10 @@ python -m demo.demo --config-file configs/multi_seq_lang_v2.yaml
 ## Training
 
 ```
-python3 -m torch.distributed.run --nproc_per_node=2 tools/train_net.py --config-file /checkpoint/jinghuang/multiplexer/flow/20201111/ocr.1k4fu05s/config.yaml
-# python3 -m torch.distributed.run --nproc_per_node=8 tools/train_net.py --config-file /checkpoint/jinghuang/multiplexer/flow/20201111/ocr.1k4fu05s/config.yaml
-# python3 -m torch.distributed.run --nproc_per_node=8 tools/train_net.py --config-file /checkpoint/jinghuang/multiplexer/configs/multiplexer_v1.yaml
+conda init bash
+source ~/.bashrc
+conda activate multiplexer
+python3 tools/train_net.py --config-file /checkpoint/jinghuang/multiplexer/configs/multiplexer_v1.yaml
 ```
 
 ## Citing Multiplexer

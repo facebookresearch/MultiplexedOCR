@@ -7,11 +7,11 @@ from virtual_fs.unified_fs import UnifiedFileSystem
 path = virtual_path
 
 ufs = UnifiedFileSystem()
+access = ufs.access
 listdir = ufs.listdir
 makedirs = ufs.makedirs
 rmdir = ufs.rmdir
 remove = ufs.remove
-access = ufs.access
 
 
 def system(command):
