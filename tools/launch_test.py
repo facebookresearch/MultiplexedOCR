@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument("--dataset_ratios", default=None, help="Dataset ratios, e.g., 1:2:5")
     parser.add_argument("--dist-url", default="auto")
     parser.add_argument("--eval-only", action="store_true")
-    parser.add_argument("--gpu-type", default="volta32gb", choices=["volta32gb"])
+    parser.add_argument("--gpu-type", default=None, choices=[None, "volta32gb"])
     parser.add_argument("--language_heads", default=None, help="Language heads")
     parser.add_argument("--language_heads_enabled", default=None, help="Enabled language heads")
     parser.add_argument(

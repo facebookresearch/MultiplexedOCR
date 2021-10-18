@@ -7,9 +7,11 @@ from functools import partial
 import cv2
 import numpy as np
 import torch
-from deprecated import creat_color_map, render_char_mask
+from multiplexer.engine.deprecated import creat_color_map, render_char_mask
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
+import zipfile
+
 
 from multiplexer.data import transforms as T
 from multiplexer.evaluation import (
@@ -76,6 +78,9 @@ def _accumulate_txt_lists_from_multiple_gpus(txt_lists_per_gpu):
         txt_lists.extend(lst)
     return txt_lists
 
+def append_txt_to_zip(zip_file, txt_file):
+    with zipfile.ZipFile(zip_file, "a") as zipf:
+        zipf.write(txt_file, os.path.basename(txt_file))
 
 # For each acive task, create paths for txt results, zip file and file list
 # and specify functions to output and evaluate
@@ -817,8 +822,6 @@ def inference_on_the_fly(
                     cfg=cfg,
                     img=img,
                     polygon_format=polygon_format,
-                    enabled_all_rec_heads=enabled_all_rec_heads,
-                    rec_head_map=rec_head_map,
                     use_seg_poly=use_seg_poly,
                 )
 
@@ -987,7 +990,7 @@ def inference_on_the_fly(
         shutil.rmtree(tmp_folder)
 
 
-def load_image(image_path):
+def load_image(image_path, allow_failure=False):
     with open(image_path, "rb") as f:
         img = Image.open(f).convert("RGB")
     return img

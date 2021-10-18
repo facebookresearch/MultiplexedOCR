@@ -12,9 +12,10 @@ def launch_job(func, args):
         # cpus_per_task=args.workers,
         # nodes=args.num_machines,
         timeout_min=3 * 24 * 60,
+        name=args.name,
+        # Below are cluster dependent parameters
         slurm_partition=args.partition,
         slurm_constraint=args.gpu_type,
-        name=args.name,
     )
 
     job = executor.submit(func, args)

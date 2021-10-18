@@ -20,6 +20,9 @@ conda install -c conda-forge pycocotools
 conda install -c conda-forge ftfy
 pip install tensorboard
 pip install submitit
+pip install tqdm
+pip install editdistance
+pip install scipy
 pip install black
 pip install isort==5.9.3
 pip install flake8==3.9.2

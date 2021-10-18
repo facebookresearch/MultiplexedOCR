@@ -1,4 +1,4 @@
-from multiplexer.evaluation.mlt19.prepare_results import find_match_word
+from virtual_fs import virtual_os as os
 from multiplexer.utils.languages import (
     ArabicCharMap,
     HebrewCharMap,
@@ -7,7 +7,7 @@ from multiplexer.utils.languages import (
     cyrillic_greek_to_latin,
     lang_code_to_char_map_class,
 )
-from virtual_fs import virtual_os as os
+from multiplexer.evaluation.mlt19.prepare_results import find_match_word
 
 
 def output_fb_coco_class_format(
@@ -101,12 +101,13 @@ def output_fb_coco_class_format(
 
     sorted_language_result_per_img = [
         {"language": lang, "confidence": language_result_per_img[lang]}
-        for lang in sorted(language_result_per_img, key=lambda k: -language_result_per_img[k])
+        for lang in sorted(
+            language_result_per_img, key=lambda k: -language_result_per_img[k]
+        )
     ]
 
     for img_id in img_id_list:
         pred_ann["imgs"][img_id]["languages"] = sorted_language_result_per_img
-
 
 def output_icdar15(
     out_dir,
@@ -278,10 +279,9 @@ def output_mlt19(
     txt_file = os.path.join(out_dir, "res_" + img_name.split(".")[0] + ".txt")
     txt_file_list.append(txt_file)
     with open(txt_file, "wt") as res:
-        for result_log in ocr_results:
-            if should_be_filtered(
-                benchmark="mlt19_task{}".format(task),
-                result_log=result_log,
+        for i, word_result in enumerate(ocr_results):
+            if word_result.should_be_filtered(
+                name=img_name,
                 det_conf_thresh=det_conf_thresh,
                 seq_conf_thresh=seq_conf_thresh,
             ):
@@ -290,60 +290,60 @@ def output_mlt19(
             if lexicon is not None:
                 assert vocabularies_list is not None
                 assert char_map_class_list is not None
-                lang_code = result_log["language"]
-                if lang_code in vocabularies_list and len(result_log["seq_word"]) > 2:
+                lang_code = word_result.language
+                if lang_code in vocabularies_list and len(word_result.seq_word) > 2:
                     match_word, match_dist = find_match_word(
-                        rec_str=result_log["seq_word"],
-                        scores_numpy=result_log["detailed_seq_score"][:, 1:-1].swapaxes(0, 1),
+                        rec_str=word_result.seq_word,
+                        scores_numpy=word_result.detailed_seq_score[:, 1:-1].swapaxes(0, 1),
                         weighted_ed=True,
                         vocabularies=vocabularies_list[lang_code],
                         char_map_class=char_map_class_list[lang_code],
                     )
 
                     if match_dist < edit_dist_thresh:
-                        if result_log["seq_word"] != match_word:
+                        if word_result.seq_word != match_word:
                             print(
                                 "[lexicon: {}-{}][seq_conf:{:.3f}] Corrected word {} to {} with edit dist {:.4f}".format(
                                     lexicon,
                                     lang_code,
-                                    result_log["seq_score"],
-                                    result_log["seq_word"],
+                                    word_result.seq_score,
+                                    word_result.seq_word,
                                     match_word,
                                     match_dist,
                                 )
                             )
-                            result_log["seq_word"] = match_word
+                            word_result.seq_word = match_word
                         else:
                             print(
                                 "[matched][seq_conf:{:.3f}] Matched word {}".format(
-                                    result_log["seq_score"], result_log["seq_score"]
+                                    word_result.seq_score, word_result.seq_score
                                 )
                             )
                     else:
                         print(
                             "[big-dist][seq_conf:{:.3f}] Kept word {} from {} with edit dist {:.4f}".format(
-                                result_log["seq_score"],
-                                result_log["seq_word"],
+                                word_result.seq_score,
+                                word_result.seq_word,
                                 match_word,
                                 match_dist,
                             )
                         )
 
-            polygon = result_log["polygon"]
+            polygon = word_result.polygon
             if len(polygon) != 8:
-                polygon = result_log["rotated_box"]
+                polygon = word_result.rotated_box
             output = ""
             for i in range(0, len(polygon)):
                 output += "{},".format(polygon[i])
 
-            output += "{:.4f}".format(result_log["score"])  # confidence
+            output += "{:.4f}".format(word_result.det_score)  # confidence
 
             if task == 1:
                 output += "\n"
             elif task == 3:
-                output += ",{}\n".format(code_to_name(result_log["language"]))
+                output += ",{}\n".format(code_to_name(word_result.language))
             elif task == 4:
-                word = result_log["seq_word"]
+                word = word_result.seq_word
                 # handling right-to-left languages (e.g., Arabic)
                 is_right_to_left = False
                 for i in range(len(word)):
@@ -547,7 +547,6 @@ def output_total_text_intermediate(
                 pickle.dump(save_dict, f, protocol=2)
 
             res.write(output)
-
 
 def should_be_filtered(
     benchmark,

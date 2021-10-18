@@ -9,7 +9,7 @@ import zipfile
 import editdistance
 import numpy as np
 import shapely
-from multiplexere.evaluation.utils.weighted_editdistance import weighted_edit_distance
+from multiplexer.evaluation.utils.weighted_editdistance import weighted_edit_distance
 from shapely.geometry import MultiPoint, Polygon
 
 # from tqdm import tqdm
