@@ -1,3 +1,4 @@
+import getpass
 import math
 import pickle
 import random
@@ -250,7 +251,10 @@ def process_res_files(
                             if match_dist < 0.1 or g["seq_score"] >= 0.8:
                                 matched = True
                             print(
-                                "[lexicon: {}-{}][seq_conf:{:.3f}]{} Corrected word {} to {} with edit dist {:.4f}".format(
+                                (
+                                    "[lexicon: {}-{}][seq_conf:{:.3f}]{}"
+                                    + " Corrected word {} to {} with edit dist {:.4f}"
+                                ).format(
                                     lexicon,
                                     lang_code,
                                     g["seq_score"],
@@ -270,9 +274,10 @@ def process_res_files(
                             matched = True
                     else:
                         print(
-                            "[big-dist][seq_conf:{:.3f}] Keep word {} from {} with edit dist {:.4f}".format(
-                                g["seq_score"], g["word"], match_word, match_dist
-                            )
+                            (
+                                "[big-dist][seq_conf:{:.3f}]"
+                                + " Keep word {} from {} with edit dist {:.4f}"
+                            ).format(g["seq_score"], g["word"], match_word, match_dist)
                         )
 
                     if not matched and g["seq_score"] < 0.8:
@@ -448,7 +453,10 @@ def prepare_results_for_evaluation(
 
     if lexicon is not None:
         for language in lang_list:
-            lexicon_path = f"/checkpoint/{getpass.getuser()}/datasets/MLT19/eval/lexicons/{lexicon}/{language}.txt"
+            lexicon_path = (
+                f"/checkpoint/{getpass.getuser()}/"
+                + f"datasets/MLT19/eval/lexicons/{lexicon}/{language}.txt"
+            )
 
             with open(lexicon_path, "r") as lexicon_fid:
                 vocabularies_list[language] = [voc.strip() for voc in lexicon_fid.readlines()]

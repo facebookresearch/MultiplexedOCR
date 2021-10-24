@@ -2,18 +2,17 @@ import getpass
 import json
 import logging
 import math
+import zipfile
 from functools import partial
 
 import cv2
 import numpy as np
 import torch
-from multiplexer.engine.deprecated import creat_color_map, render_char_mask
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
-import zipfile
-
 
 from multiplexer.data import transforms as T
+from multiplexer.engine.deprecated import creat_color_map, render_char_mask
 from multiplexer.evaluation import (
     icdar15_eval_task4,
     mlt19_eval_task1,
@@ -78,9 +77,11 @@ def _accumulate_txt_lists_from_multiple_gpus(txt_lists_per_gpu):
         txt_lists.extend(lst)
     return txt_lists
 
+
 def append_txt_to_zip(zip_file, txt_file):
     with zipfile.ZipFile(zip_file, "a") as zipf:
         zipf.write(txt_file, os.path.basename(txt_file))
+
 
 # For each acive task, create paths for txt results, zip file and file list
 # and specify functions to output and evaluate

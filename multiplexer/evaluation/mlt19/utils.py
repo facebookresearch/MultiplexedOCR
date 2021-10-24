@@ -63,9 +63,7 @@ class MLT19Utils:
                         # example: 00001
                         keyName = m.group(1)
 
-            if (languages is None) or (
-                cls.get_language_from_filename(name) in languages
-            ):
+            if (languages is None) or (cls.get_language_from_filename(name) in languages):
                 pairs.append([keyName, archive.read(name)])
 
         return dict(pairs)

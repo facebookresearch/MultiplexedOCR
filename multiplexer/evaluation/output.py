@@ -1,4 +1,4 @@
-from virtual_fs import virtual_os as os
+from multiplexer.evaluation.mlt19.prepare_results import find_match_word
 from multiplexer.utils.languages import (
     ArabicCharMap,
     HebrewCharMap,
@@ -7,7 +7,7 @@ from multiplexer.utils.languages import (
     cyrillic_greek_to_latin,
     lang_code_to_char_map_class,
 )
-from multiplexer.evaluation.mlt19.prepare_results import find_match_word
+from virtual_fs import virtual_os as os
 
 
 def output_fb_coco_class_format(
@@ -101,13 +101,12 @@ def output_fb_coco_class_format(
 
     sorted_language_result_per_img = [
         {"language": lang, "confidence": language_result_per_img[lang]}
-        for lang in sorted(
-            language_result_per_img, key=lambda k: -language_result_per_img[k]
-        )
+        for lang in sorted(language_result_per_img, key=lambda k: -language_result_per_img[k])
     ]
 
     for img_id in img_id_list:
         pred_ann["imgs"][img_id]["languages"] = sorted_language_result_per_img
+
 
 def output_icdar15(
     out_dir,
@@ -276,6 +275,9 @@ def output_mlt19(
     if img_name.startswith("ts_"):
         # MLT19 test set image name looks like ts_img_09983.jpg, remove the ts_ prefix here
         img_name = img_name[3:]
+    elif img_name.startswith("val_"):
+        # MLT19 validation set image name looks like val_img_01716.jpg, remove the val_ prefix here
+        img_name = img_name[4:]
     txt_file = os.path.join(out_dir, "res_" + img_name.split(".")[0] + ".txt")
     txt_file_list.append(txt_file)
     with open(txt_file, "wt") as res:
@@ -370,6 +372,9 @@ def output_mlt19_intermediate(
     if img_name.startswith("ts_"):
         # MLT19 test set image name looks like ts_img_09983.jpg, remove the ts_ prefix here
         img_name = img_name[3:]
+    elif img_name.startswith("val_"):
+        # MLT19 validation set image name looks like val_img_01716.jpg, remove the val_ prefix here
+        img_name = img_name[4:]
     txt_file = os.path.join(out_dir, "res_" + img_name.split(".")[0] + ".txt")
     txt_file_list.append(txt_file)
 
@@ -547,6 +552,7 @@ def output_total_text_intermediate(
                 pickle.dump(save_dict, f, protocol=2)
 
             res.write(output)
+
 
 def should_be_filtered(
     benchmark,
