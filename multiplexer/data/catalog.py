@@ -265,7 +265,7 @@ class DatasetCatalog(object):
                 "gts_dir": os.path.join(MSRATD500_ROOT, "train", "gts"),
                 "expected_imgs_in_dir": 300,
             },
-            "factory": "IcdarMSRATD500Dataset",
+            "factory": "MSRATD500Dataset",
         },
         "msra_td500_test": {
             "args": {
@@ -275,7 +275,7 @@ class DatasetCatalog(object):
                 "gts_dir": os.path.join(MSRATD500_ROOT, "test", "gts"),
                 "expected_imgs_in_dir": 200,
             },
-            "factory": "IcdarMSRATD500Dataset",
+            "factory": "MSRATD500Dataset",
         },
         "kaist_train": {
             "args": {
@@ -285,7 +285,7 @@ class DatasetCatalog(object):
                 "gts_dir": os.path.join(KAIST_ROOT, "train", "gts"),
                 "expected_imgs_in_dir": 2427,
             },
-            "factory": "IcdarKAISTDataset",
+            "factory": "KAISTDataset",
         },
         "synthtext_train": ("SynthText", "SynthText_GT_E2E"),
         "synthtext_test": ("SynthText", "SynthText_GT_E2E"),

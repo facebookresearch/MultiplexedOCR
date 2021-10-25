@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import getpass
-import glob
 import os
 import pickle
 import zipfile
@@ -23,7 +22,8 @@ def append_txt_to_zip(zip_file, txt_file):
 
 def list_from_str(st):
     line = st.split(",")
-    # box[0:4], polygon[4:12], word, seq_word, detection_score, rec_socre, seq_score, char_score_path
+    # box[0:4], polygon[4:12], word, seq_word,
+    # detection_score, rec_socre, seq_score, char_score_path
     new_line = (
         [float(a) for a in line[4:12]]
         + [float(line[-4])]
@@ -87,10 +87,10 @@ def nms(boxes, overlap):
             box2 = boxes[jj]
             box1_score = rec_scores[ii]
             box2_score = rec_scores[jj]
-            str1 = box1[9]
-            str2 = box2[9]
-            box_i = [box1[0], box1[1], box1[4], box1[5]]
-            box_j = [box2[0], box2[1], box2[4], box2[5]]
+            # str1 = box1[9]
+            # str2 = box2[9]
+            # box_i = [box1[0], box1[1], box1[4], box1[5]]
+            # box_j = [box2[0], box2[1], box2[4], box2[5]]
             poly1 = polygon_from_list(box1[0:8])
             poly2 = polygon_from_list(box2[0:8])
             iou = polygon_iou(box1[0:8], box2[0:8])
@@ -203,31 +203,44 @@ def prepare_results_for_evaluation(
 
     if lexicon == "generic":
         # generic lexicon
-        lexicon_path = f"/checkpoint/{getpass.getuser()}/datasets/ICDAR15/eval/lexicons/GenericVocabulary_new.txt"
+        lexicon_path = (
+            f"/checkpoint/{getpass.getuser()}/"
+            + "datasets/ICDAR15/eval/lexicons/GenericVocabulary_new.txt"
+        )
 
         with open(lexicon_path, "r") as lexicon_fid:
             vocabularies = [voc.strip() for voc in lexicon_fid.readlines()]
 
-        pair_path = f"/checkpoint/{getpass.getuser()}/datasets/ICDAR15/eval/lexicons/GenericVocabulary_pair_list.txt"
+        pair_path = (
+            f"/checkpoint/{getpass.getuser()}/"
+            + "datasets/ICDAR15/eval/lexicons/GenericVocabulary_pair_list.txt"
+        )
         pairs = load_lexicon_pairs(pair_path)
     elif lexicon == "weak":
         # weak lexicon
-        lexicon_path = f"/checkpoint/{getpass.getuser()}/datasets/ICDAR15/eval/lexicons/ch4_test_vocabulary_new.txt"
+        lexicon_path = (
+            f"/checkpoint/{getpass.getuser()}/"
+            + "datasets/ICDAR15/eval/lexicons/ch4_test_vocabulary_new.txt"
+        )
 
         with open(lexicon_path, "r") as lexicon_fid:
             vocabularies = [voc.strip() for voc in lexicon_fid.readlines()]
 
-        pair_path = f"/checkpoint/{getpass.getuser()}/datasets/ICDAR15/eval/lexicons/ch4_test_vocabulary_pair_list.txt"
+        pair_path = (
+            f"/checkpoint/{getpass.getuser()}/"
+            + "datasets/ICDAR15/eval/lexicons/ch4_test_vocabulary_pair_list.txt"
+        )
         pairs = load_lexicon_pairs(pair_path)
 
     for i in range(1, 501):
-        img = "img_" + str(i) + ".jpg"
+        # img = "img_" + str(i) + ".jpg"
         gt_img = "gt_img_" + str(i) + ".txt"
         print("[{}/500] Processing {}".format(i, gt_img))
         if lexicon == "strong":
             # strong
             lexicon_path = (
-                f"/checkpoint/{getpass.getuser()}/datasets/ICDAR15/eval/lexicons/new_strong_lexicon/new_voc_img_"
+                f"/checkpoint/{getpass.getuser()}/"
+                + "datasets/ICDAR15/eval/lexicons/new_strong_lexicon/new_voc_img_"
                 + str(i)
                 + ".txt"
             )

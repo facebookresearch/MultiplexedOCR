@@ -30,7 +30,7 @@ def weighted_edit_distance(word1, word2, scores, char_map_class=None):
 
 
 def ed_delete_cost(j, i, word1, word2, scores, char_map_class=None):
-    ## delect a[i]
+    # delect a[i]
     if char_map_class is None:
         c = char2num(word1[j])
     else:
@@ -39,7 +39,7 @@ def ed_delete_cost(j, i, word1, word2, scores, char_map_class=None):
 
 
 def ed_insert_cost(i, j, word1, word2, scores, char_map_class=None):
-    ## insert b[j]
+    # insert b[j]
     if char_map_class is None:
         if i < len(word1) - 1:
             c1 = char2num(word1[i])
@@ -59,7 +59,7 @@ def ed_insert_cost(i, j, word1, word2, scores, char_map_class=None):
 
 
 def ed_replace_cost(i, j, word1, word2, scores, char_map_class=None):
-    ## replace a[i] with b[j]
+    # replace a[i] with b[j]
     if char_map_class is None:
         c1 = char2num(word1[i])
         c2 = char2num(word2[j])
