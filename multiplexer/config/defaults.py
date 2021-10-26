@@ -36,7 +36,7 @@ _C.MODEL.TORCHSCRIPT_ONLY = False
 # Proposal generator options
 # ---------------------------------------------------------------------------- #
 _C.MODEL.PROPOSAL_GENERATOR = CN()
-# Current proposal generators include "RPN", "RRPN" and "SPN"
+# Current proposal generators include "RPN", "RRPN", "SPN" and "RSPN"
 _C.MODEL.PROPOSAL_GENERATOR.NAME = "SPN"
 
 # Language-specific heads

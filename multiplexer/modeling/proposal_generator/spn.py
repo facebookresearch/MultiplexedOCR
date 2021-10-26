@@ -658,8 +658,7 @@ class SPN(nn.Module):
         self.cfg = cfg.clone()
 
         self.head = SEGHead(in_channels=cfg.MODEL.BACKBONE.OUT_CHANNELS, cfg=cfg)
-        self.box_selector_train = SEGPostProcessor(cfg=cfg, is_train=True)
-        self.box_selector_test = SEGPostProcessor(cfg=cfg, is_train=False)
+        self.init_box_selectors()
         self.loss_evaluator = SEGLossComputation(cfg)
 
         if cfg.MODEL.SEG.FROZEN:
@@ -725,3 +724,7 @@ class SPN(nn.Module):
             "scores": scores,
         }
         return boxes, seg_results
+
+    def init_box_selectors(self):
+        self.box_selector_train = SEGPostProcessor(cfg=self.cfg, is_train=True)
+        self.box_selector_test = SEGPostProcessor(cfg=self.cfg, is_train=False)

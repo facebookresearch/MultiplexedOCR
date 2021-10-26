@@ -7,20 +7,17 @@ import zipfile
 
 import numpy as np
 import torch
+from PIL import Image
+
 from multiplexer.structures.bounding_box import BoxList
 from multiplexer.structures.language_list import LanguageList
-from multiplexer.structures.segmentation_mask import (
-    SegmentationCharMask,
-    SegmentationMask,
-)
-from PIL import Image
+from multiplexer.structures.segmentation_mask import SegmentationCharMask, SegmentationMask
 from virtual_fs import virtual_os as os
 from virtual_fs.virtual_io import open
 
 from ...utils.char_map_arabic import ArabicCharMap
 from ...utils.languages import code_to_name, lang_code_to_char_map_class, name_to_code
 from .polygon_ocr_dataset import PolygonOcrDataset
-
 
 logger = logging.getLogger(__name__)
 
@@ -83,9 +80,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
                     output_image_list += f.readlines()
             else:
                 assert language != "hi", "SynthMLT-Hindi needs to be filtered before being used."
-                with open(
-                    os.path.join(self.imgs_dir, "{}.zip".format(lang_name)), "rb"
-                ) as buffer:
+                with open(os.path.join(self.imgs_dir, "{}.zip".format(lang_name)), "rb") as buffer:
                     img_zip = zipfile.ZipFile(buffer)
 
                 # Only add the image files (filtering out folders and txt)
@@ -110,9 +105,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
         if item in self.filter_list:
             if random.random() < 0.01:
                 # log every 100
-                print(
-                    "[SynthMLT] data {} already filtered (retry {})".format(item, retry)
-                )
+                print("[SynthMLT] data {} already filtered (retry {})".format(item, retry))
             if retry < 1000:
                 return self.__getitem__(
                     item=random.randint(0, len(self.image_lists) - 1), retry=retry + 1
@@ -132,11 +125,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
                 with open(img_zip_name, "rb") as buffer:
                     img_zip = zipfile.ZipFile(buffer)
             except FileNotFoundError:
-                print(
-                    "[Warning] File {} not found for retry {}".format(
-                        img_zip_name, retry
-                    )
-                )
+                print("[Warning] File {} not found for retry {}".format(img_zip_name, retry))
                 if retry < 12:
                     print("[Warning] Sleeping for {} seconds ...".format(2 ** retry))
                     time.sleep(2 ** retry)
@@ -168,9 +157,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
             lines = open(gt_path).readlines()
         else:
             lines = []
-            with open(
-                os.path.join(self.gts_dir, "{}_gt.zip".format(lang_name)), "rb"
-            ) as buffer:
+            with open(os.path.join(self.gts_dir, "{}_gt.zip".format(lang_name)), "rb") as buffer:
                 gt_zip = zipfile.ZipFile(buffer)
 
             try:
@@ -287,18 +274,14 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
             parts[0] = parts[0].replace("\ufeff", "")
             assert 0 == 1, "special character 2 found!"
 
-        assert len(parts) >= 10, "[Error][SynthMLT] line = {}, parts = {}".format(
-            line, parts
-        )
+        assert len(parts) >= 10, "[Error][SynthMLT] line = {}, parts = {}".format(line, parts)
 
         if len(parts) > 10:
             word = ",".join(parts[9:])
             if random.random() < 0.02:
                 # log every 50
                 print(
-                    "[Warning][SynthMLT] line = {}, parts = {}, word = {}".format(
-                        line, parts, word
-                    )
+                    "[Warning][SynthMLT] line = {}, parts = {}, word = {}".format(line, parts, word)
                 )
         else:
             word = parts[9]

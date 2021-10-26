@@ -376,6 +376,39 @@ class DatasetCatalog(object):
             },
         }
 
+    # SynthText MLT Zip
+    for language in SYNTHTEXT_MLT_ZIP_LANGUAGES:
+        DATASETS["synthtext_mlt_zip_" + language + "_train"] = {
+            "factory": "SynthTextMLTZipDataset",
+            "args": {
+                "name": "synthtext_mlt_zip_" + language + "_train",
+                "imgs_dir": SYNTHTEXT_MLT_ZIP_ROOT,
+                "gts_dir": SYNTHTEXT_MLT_ZIP_ROOT,
+                "split": "train",
+                "language": language,
+            },
+        }
+
+    DATASETS["synthtext_mlt_zip_train"] = {
+        "factory": "SynthTextMLTZipDataset",
+        "args": {
+            "name": "synthtext_mlt_zip_train",
+            "split": "train",
+            "imgs_dir": SYNTHTEXT_MLT_ZIP_ROOT,
+            "gts_dir": SYNTHTEXT_MLT_ZIP_ROOT,
+        },
+    }
+    DATASETS["synthtext_mlt_zip_random50_test"] = {
+        "factory": "SynthTextMLTZipDataset",
+        "args": {
+            "name": "synthtext_mlt_zip_random50_test",
+            "split": "test",
+            "imgs_dir": SYNTHTEXT_MLT_ZIP_ROOT,
+            "gts_dir": SYNTHTEXT_MLT_ZIP_ROOT,
+            "language": "random50",
+        },
+    }
+
     @staticmethod
     def get(name):
         return DatasetCatalog.DATASETS[name]
