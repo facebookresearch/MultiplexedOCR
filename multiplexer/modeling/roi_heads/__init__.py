@@ -1,2 +1,3 @@
 from .build import build_roi_heads
-from .combined_roi_heads import CombinedROIHeads
+from .roi_head_combined import CombinedROIHead
+from .roi_head_mask import MaskROIHead

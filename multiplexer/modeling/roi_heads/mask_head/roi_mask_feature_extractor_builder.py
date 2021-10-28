@@ -13,9 +13,10 @@ from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_base im
 # from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_resnet18_rect_v1 import (
 #     Resnet18RectV1FeatureExtractor,
 # )
-# from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_resnet18_rect_v2 import (
-#     Resnet18RectV2FeatureExtractor,
-# )
+from multiplexer.modeling.roi_heads.mask_head.roi_mask_feature_extractor_resnet18_rect_v2 import (
+    Resnet18RectV2FeatureExtractor,
+)
+
 # from .roi_mask_feature_extractor_resnet18_rotated_v0 import (
 #     Resnet18RotatedV0FeatureExtractor,
 # )
@@ -32,7 +33,7 @@ _ROI_MASK_FEATURE_EXTRACTORS = {
     # "Resnet18SquareV0FeatureExtractor": Resnet18SquareV0FeatureExtractor,
     # "Resnet18RectV0FeatureExtractor": Resnet18RectV0FeatureExtractor,
     # "Resnet18RectV1FeatureExtractor": Resnet18RectV1FeatureExtractor,
-    # "Resnet18RectV2FeatureExtractor": Resnet18RectV2FeatureExtractor,
+    "Resnet18RectV2FeatureExtractor": Resnet18RectV2FeatureExtractor,
     # "Resnet18RotatedV0FeatureExtractor": Resnet18RotatedV0FeatureExtractor,
     # "RotatedMaskRCNNFPNFeatureExtractor": RotatedMaskRCNNFPNFeatureExtractor,
 }

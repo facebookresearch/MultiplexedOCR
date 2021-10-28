@@ -280,9 +280,11 @@ class CTCSequencePredictor(nn.Module):
             # raw_loss_seq_decoder = self.criterion_seq_decoder(
             #     preds.log_softmax(dim=2), word_targets, preds_size, length_for_loss
             # )
+            torch.backends.cudnn.enabled = False  # avoid PyTorch CTCLoss bug
             raw_loss_seq_decoder = self.criterion_seq_decoder(
                 preds.log_softmax(dim=2), flatten_targets.cpu(), preds_size, length_for_loss.cpu()
             )
+            torch.backends.cudnn.enabled = True  # avoid PyTorch CTCLoss bug
             # NOTE: use warp_ctc seems to be more stable
             # raw_loss_seq_decoder = self.criterion_seq_decoder(
             #     preds, flatten_targets.cpu(), preds_size, length_for_loss.cpu()
@@ -308,7 +310,8 @@ class CTCSequencePredictor(nn.Module):
                 print(f"[Debug] Saved the above debug info to {dbg_file}.")
 
             # squeeze to change loss from shape (1) to single number to match with other losses
-            loss_seq_decoder = raw_loss_seq_decoder.cuda().squeeze()
+            # loss_seq_decoder = raw_loss_seq_decoder.cuda().squeeze()
+            loss_seq_decoder = raw_loss_seq_decoder.squeeze()
 
             if language_weights is not None:
                 loss_seq_decoder = loss_seq_decoder * language_weights

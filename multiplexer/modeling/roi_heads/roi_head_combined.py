@@ -10,14 +10,14 @@ from .build import ROI_HEADS_REGISTRY
 
 
 @ROI_HEADS_REGISTRY.register()
-class CombinedROIHeads(torch.nn.Module):
+class CombinedROIHead(torch.nn.Module):
     """
     Combines a set of individual heads (for box prediction or masks) into a single
     head.
     """
 
     def __init__(self, cfg):
-        super(CombinedROIHeads, self).__init__()
+        super(CombinedROIHead, self).__init__()
 
         # flags to deprecate: cfg.MODEL.RPN_ONLY, cfg.MODEL.MASK_ON, cfg.SEQUENCE.SEQ_ON
         self.box = build_roi_box_head(cfg)

@@ -11,6 +11,7 @@ from PIL import Image
 
 from multiplexer.structures.bounding_box import BoxList
 from multiplexer.structures.language_list import LanguageList
+from multiplexer.structures.rotated_box_list import RotatedBoxList
 from multiplexer.structures.segmentation_mask import SegmentationCharMask, SegmentationMask
 from virtual_fs import virtual_os as os
 from virtual_fs.virtual_io import open
@@ -77,7 +78,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
             if os.path.exists(keep_list_file):
                 # Online filtering is too slow for SynthMLT-Hindi, so we use the pre-generated keep-list.
                 with open(keep_list_file, "r") as f:
-                    output_image_list += f.readlines()
+                    output_image_list += [name.strip() for name in f.readlines()]
             else:
                 assert language != "hi", "SynthMLT-Hindi needs to be filtered before being used."
                 with open(os.path.join(self.imgs_dir, "{}.zip".format(lang_name)), "rb") as buffer:
@@ -148,6 +149,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
         words = []
         languages = []
         char_boxes = []
+        rotated_boxes = []
 
         gt_name = lang_name + "/" + str.split(im_name, ".")[0] + ".txt"  # .jpg -> .txt
         gt_path = os.path.join(
@@ -201,10 +203,12 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
             min_y = min(rect[1::2])
             max_x = max(rect[::2])
             max_y = max(rect[1::2])
+            rotated_box = self.polygon_to_rotated_box(rect)
             segmentations.append([rect])
             boxes.append([min_x, min_y, max_x, max_y])
             words.append(word)
             languages.append(language)
+            rotated_boxes.append(rotated_box)
 
             # Visualize bounding box
             # draw.rectangle((min_x, min_y, max_x, max_y), None, "#0f0")
@@ -228,6 +232,7 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
             char_boxes = [[np.zeros((10,), dtype=np.float32)]]
             segmentations = [[np.zeros((8,), dtype=np.float32)]]
             languages.append("None")
+            rotated_boxes = np.zeros((1, 5), dtype=np.float32)
 
         target = BoxList(boxes, img.size, mode="xyxy", use_char_ann=self.use_char_ann)
 
@@ -247,6 +252,9 @@ class SynthTextMLTZipDataset(PolygonOcrDataset):
 
         language_list = LanguageList(languages)
         target.add_field("languages", language_list)
+
+        rotated_boxes_5d = torch.tensor(rotated_boxes)
+        target.add_field("rotated_boxes_5d", RotatedBoxList(rotated_boxes_5d, img.size))
 
         # img = Image.alpha_composite(img, txt)
 

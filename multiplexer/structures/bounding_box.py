@@ -264,9 +264,8 @@ class BoxList(object):
         return self
 
     def area(self):
-        TO_REMOVE = 1
         box = self.bbox
-        area = (box[:, 2] - box[:, 0] + TO_REMOVE) * (box[:, 3] - box[:, 1] + TO_REMOVE)
+        area = (box[:, 2] - box[:, 0]) * (box[:, 3] - box[:, 1])
         return area
 
     def copy_with_fields(self, fields):

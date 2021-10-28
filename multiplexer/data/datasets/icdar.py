@@ -201,10 +201,10 @@ class IcdarDataset(PolygonOcrDataset):
             if word == "###":
                 if self.ignore_difficult:
                     rect = list(loc[0])
-                    min_x = min(rect[::2]) - 1
-                    min_y = min(rect[1::2]) - 1
-                    max_x = max(rect[::2]) - 1
-                    max_y = max(rect[1::2]) - 1
+                    min_x = min(rect[::2])
+                    min_y = min(rect[1::2])
+                    max_x = max(rect[::2])
+                    max_y = max(rect[1::2])
                     box = [min_x, min_y, max_x, max_y]
                     segmentations.append([loc[0, :]])
                     tindex = len(boxes)
@@ -221,10 +221,10 @@ class IcdarDataset(PolygonOcrDataset):
                     continue
             else:
                 rect = list(loc[0])
-                min_x = min(rect[::2]) - 1
-                min_y = min(rect[1::2]) - 1
-                max_x = max(rect[::2]) - 1
-                max_y = max(rect[1::2]) - 1
+                min_x = min(rect[::2])
+                min_y = min(rect[1::2])
+                max_x = max(rect[::2])
+                max_y = max(rect[1::2])
                 box = [min_x, min_y, max_x, max_y]
                 segmentations.append([loc[0, :]])
                 tindex = len(boxes)

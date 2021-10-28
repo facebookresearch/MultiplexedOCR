@@ -369,6 +369,8 @@ class V1ROIMaskHead(torch.nn.Module):
             decoder_targets = cat(decoder_targets, dim=0)
             word_targets = cat(word_targets, dim=0)
             gt_language_targets = LanguageList.concat(gt_language_targets)
+            
+            assert x.shape[0] == len(gt_language_targets), f"x.shape = {x.shape}, proposals={proposals}, dict_targets['gt_language_targets'] = {dict_targets['gt_language_targets']}, {x.shape[0]} != {len(gt_language_targets)}"
 
             assert torch.all(decoder_targets >= -2), "\n".join(
                 [

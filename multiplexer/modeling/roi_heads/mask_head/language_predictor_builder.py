@@ -6,8 +6,7 @@ from .language_predictor_v1 import V1LanguagePredictor
 # from .language_predictor_v2 import V2LanguagePredictor
 # from .language_predictor_v3 import V3LanguagePredictor
 # from .language_predictor_v4 import V4LanguagePredictor
-# from .language_predictor_v5 import V5LanguagePredictor
-
+from .language_predictor_v5 import V5LanguagePredictor
 
 _LANGUAGE_PREDICTOR = {
     # "V0LanguagePredictor": V0LanguagePredictor,
@@ -15,7 +14,7 @@ _LANGUAGE_PREDICTOR = {
     # "V2LanguagePredictor": V2LanguagePredictor,
     # "V3LanguagePredictor": V3LanguagePredictor,
     # "V4LanguagePredictor": V4LanguagePredictor,
-    # "V5LanguagePredictor": V5LanguagePredictor,
+    "V5LanguagePredictor": V5LanguagePredictor,
 }
 
 

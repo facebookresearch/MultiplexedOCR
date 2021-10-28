@@ -770,7 +770,7 @@ _C.MODEL.SEG.USE_PPM = False
 # ROI HEADS options
 # ---------------------------------------------------------------------------- #
 _C.MODEL.ROI_HEADS = CN()
-_C.MODEL.ROI_HEADS.NAME = "CombinedROIHeads"
+_C.MODEL.ROI_HEADS.NAME = "CombinedROIHead"
 _C.MODEL.ROI_HEADS.USE_FPN = False
 # Overlap threshold for an RoI to be considered foreground (if >= FG_IOU_THRESHOLD)
 _C.MODEL.ROI_HEADS.FG_IOU_THRESHOLD = 0.5

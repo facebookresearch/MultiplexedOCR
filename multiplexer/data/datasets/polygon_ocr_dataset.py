@@ -1,6 +1,8 @@
 import logging
 import math
 
+import cv2
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from virtual_fs import virtual_os as os
@@ -17,6 +19,28 @@ class PolygonOcrDataset(object):
             "default": "/path/to/Arial Unicode.ttf",
         }
         self.fonts = {}
+
+    def polygon_to_rotated_box(self, polygon):
+        contour = []
+        for i in range(0, len(polygon), 2):
+            contour.append([polygon[i], polygon[i + 1]])
+        contour = np.array(contour)
+        rbox5 = cv2.minAreaRect(contour)
+        cnt_x, cnt_y, w, h, angle = (
+            rbox5[0][0],
+            rbox5[0][1],
+            rbox5[1][0],
+            rbox5[1][1],
+            -rbox5[2],
+        )
+        # the following is a heuristic to decide the angle
+        if w * 1.5 < h:
+            t = w
+            w = h
+            h = t
+            angle = angle - 90
+        angle = (angle + 90) % 180 - 90
+        return [cnt_x, cnt_y, w, h, angle]
 
     def visualize(self, img, target):
         if self.transforms is not None:

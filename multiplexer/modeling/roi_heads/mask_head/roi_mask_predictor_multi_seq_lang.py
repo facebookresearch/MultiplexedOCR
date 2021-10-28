@@ -87,9 +87,17 @@ class MultiSeqLangMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
 
             keep_indices = []
 
-            for word_id in range(0, num_words):
-                if gt_language_targets is not None:
-                    gt_language = gt_language_targets[word_id].languages[0]
+            if gt_language_targets is not None:
+                assert len(gt_language_targets) == num_words, f"Dimension mismatch: {len(gt_language_targets)} != {num_words}"
+                for word_id in range(0, num_words):
+                    try:
+                        gt_language = gt_language_targets[word_id].languages[0]
+                    except IndexError:
+                        print(f"gt_language_targets = {gt_language_targets}")
+                        print(f"word_id = {word_id}")
+                        print(f"gt_language_targets[{word_id}] = {gt_language_targets[word_id]}")
+                        print(f"gt_language_targets[{word_id}].languages = {gt_language_targets[word_id].languages}")
+                        gt_language = gt_language_targets[word_id].languages[0]  # raise
                     if gt_language != "none":
                         keep_indices.append(word_id)
 

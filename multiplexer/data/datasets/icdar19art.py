@@ -191,7 +191,8 @@ class Icdar19ArTDataset(IcdarDataset):
         return output_image_list
 
     def load_gt_from_txt(self, gt_path):
-        words, boxes, char_boxes, segmentations, labels, languages = (
+        words, boxes, char_boxes, segmentations, labels, languages, rotated_boxes = (
+            [],
             [],
             [],
             [],
@@ -261,11 +262,13 @@ class Icdar19ArTDataset(IcdarDataset):
             max_x = max(polygon[::2])
             max_y = max(polygon[1::2])
             box = [min_x, min_y, max_x, max_y]
+            rotated_box = self.polygon_to_rotated_box(polygon)
             segmentations.append([polygon])
             boxes.append(box)
             words.append(word)
             labels.append(1)
             languages.append(language)
+            rotated_boxes.append(rotated_box)
 
         num_boxes = len(boxes)
         if len(boxes) > 0:
@@ -288,6 +291,7 @@ class Icdar19ArTDataset(IcdarDataset):
             segmentations = [[np.zeros((8,), dtype=np.float32)]]
             labels = [1]
             languages.append("none")
+            rotated_boxes = np.zeros((1, 5), dtype=np.float32)
 
         return {
             "words": words,
@@ -296,6 +300,7 @@ class Icdar19ArTDataset(IcdarDataset):
             "segmentations": segmentations,
             "labels": labels,
             "languages": languages,
+            "rotated_boxes": rotated_boxes,
         }
 
     def line2boxes(self, line1, line2):

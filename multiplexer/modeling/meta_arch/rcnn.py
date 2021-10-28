@@ -36,6 +36,13 @@ class GeneralizedRCNN(nn.Module):
         else:
             self.roi_heads = build_roi_heads(cfg)
 
+        if self.cfg.MODEL.SEG_ON and self.cfg.MODEL.SEG.USE_FUSE_FEATURE:
+            self.in_feature_type = "fuse_feature"
+        elif self.cfg.MODEL.FPN.USE_PRETRAINED:
+            self.in_feature_type = "pretrained"
+        else:
+            self.in_feature_type = "features"
+
     def forward(self, images, targets=None):
         """
         Arguments:
@@ -53,6 +60,16 @@ class GeneralizedRCNN(nn.Module):
             raise ValueError("In training mode, targets should be passed")
         images = to_image_list(images)
         features = self.backbone(images.tensors)
+
+        proposal_out = self.forward_proposal(images, features, targets)
+        self.forward_roi_heads(proposal_out, targets)
+
+    def forward_proposal(self, images, features, targets=None):
+        fuse_feature = None
+        proposals = None
+        proposal_losses = None
+        seg_results = None
+
         if self.cfg.MODEL.SEG_ON and not self.training:
             (proposals, seg_results), fuse_feature = self.proposal(images, features, targets)
         else:
@@ -65,28 +82,42 @@ class GeneralizedRCNN(nn.Module):
                 if self.cfg.MODEL.FPN.USE_PRETRAINED:
                     in_features = list(features.values())
                 proposals, proposal_losses = self.proposal(images, in_features, targets)
+
+        if self.in_feature_type == "image":
+            in_features = images.tensors
+        elif self.in_feature_type == "fuse_feature":
+            in_features = fuse_feature
+        elif self.in_feature_type == "pretrained":
+            in_features = list(features.values())
+        else:
+            in_features = features
+
+        return {
+            "in_features": in_features,
+            "proposals": proposals,
+            "proposal_losses": proposal_losses,
+            "seg_results": seg_results,
+        }
+
+    def forward_roi_heads(self, proposal_out, targets=None):
         if self.roi_heads is not None:
-            if self.cfg.MODEL.SEG_ON and self.cfg.MODEL.SEG.USE_FUSE_FEATURE:
-                x, result, detector_losses = self.roi_heads(fuse_feature, proposals, targets)
-            else:
-                in_features = features
-                if self.cfg.MODEL.FPN.USE_PRETRAINED:
-                    in_features = list(features.values())
-                x, result, detector_losses = self.roi_heads(in_features, proposals, targets)
+            x, result, detector_losses = self.roi_heads(
+                proposal_out["in_features"], proposal_out["proposals"], targets
+            )
         else:
             # RPN-only models don't have roi_heads
             # x = features
-            result = proposals
+            result = proposal_out["proposals"]
             detector_losses = {}
 
         if self.training:
             losses = {}
             if self.roi_heads is not None:
                 losses.update(detector_losses)
-            losses.update(proposal_losses)
+            losses.update(proposal_out["proposal_losses"])
             return losses
         else:
             if self.cfg.MODEL.SEG_ON:
-                return result, proposals, seg_results
+                return result, proposal_out["proposals"], proposal_out["seg_results"]
             else:
                 return result

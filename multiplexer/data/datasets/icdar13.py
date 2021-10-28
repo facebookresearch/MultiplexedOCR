@@ -44,7 +44,8 @@ class Icdar13Dataset(IcdarDataset):
             return self.image_lists
 
     def load_gt_from_txt(self, gt_path):
-        words, boxes, char_boxes, segmentations, labels, languages = (
+        words, boxes, char_boxes, segmentations, labels, languages, rotated_boxes = (
+            [],
             [],
             [],
             [],
@@ -70,11 +71,19 @@ class Icdar13Dataset(IcdarDataset):
             max_x = max(rect[::2])
             max_y = max(rect[1::2])
             box = [min_x, min_y, max_x, max_y]
+            rotated_box = [
+                (min_x + max_x) / 2.0,
+                (min_y + max_y) / 2.0,
+                max_x - min_x,
+                max_y - min_y,
+                0.0,
+            ]
             segmentations.append([rect])
             boxes.append(box)
             words.append(word)
             labels.append(1)
             languages.append(language)
+            rotated_boxes.append(rotated_box)
 
         num_boxes = len(boxes)
         if len(boxes) > 0:
@@ -97,6 +106,7 @@ class Icdar13Dataset(IcdarDataset):
             segmentations = [[np.zeros((8,), dtype=np.float32)]]
             labels = [1]
             languages.append("none")
+            rotated_boxes = np.zeros((1, 5), dtype=np.float32)
 
         return {
             "words": words,
@@ -105,6 +115,7 @@ class Icdar13Dataset(IcdarDataset):
             "segmentations": segmentations,
             "labels": labels,
             "languages": languages,
+            "rotated_boxes": rotated_boxes,
         }
 
     def line2boxes(self, line):
