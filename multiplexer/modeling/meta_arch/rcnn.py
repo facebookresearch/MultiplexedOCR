@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 from multiplexer.modeling.backbone import build_backbone
@@ -6,7 +7,7 @@ from multiplexer.modeling.roi_heads import build_roi_heads
 
 # from multiplexer.modeling.segmentation.seg_module_builder import build_segmentation
 from multiplexer.structures.image_list import to_image_list
-
+from multiplexer.structures.word_result import WordResult
 from .build import META_ARCH_REGISTRY
 
 
@@ -62,7 +63,7 @@ class GeneralizedRCNN(nn.Module):
         features = self.backbone(images.tensors)
 
         proposal_out = self.forward_proposal(images, features, targets)
-        self.forward_roi_heads(proposal_out, targets)
+        return self.forward_roi_heads(proposal_out, targets)
 
     def forward_proposal(self, images, features, targets=None):
         fuse_feature = None
@@ -117,7 +118,26 @@ class GeneralizedRCNN(nn.Module):
             losses.update(proposal_out["proposal_losses"])
             return losses
         else:
-            if self.cfg.MODEL.SEG_ON:
-                return result, proposal_out["proposals"], proposal_out["seg_results"]
+            cpu_device = torch.device("cpu")
+            
+            prediction_dict = {
+                "global_prediction": None,
+            }
+
+            if self.cfg.MODEL.TRAIN_DETECTION_ONLY:
+                prediction_dict["global_prediction"] = [obj.to(cpu_device) for obj in result]
+                assert len(proposal_out["seg_results"]["scores"]) == 1
+                prediction_dict["scores"] = proposal_out["seg_results"]["scores"][0].to(cpu_device).tolist()
+                # Add dummy word result list
+                word_result_list = []
+                for _ in range(len(prediction_dict["scores"])):
+                    word_result = WordResult()
+                    word_result.seq_word = ""
+                    word_result_list.append(word_result)
+                prediction_dict["word_result_list"] = word_result_list
             else:
-                return result
+                prediction_dict["global_prediction"] = [obj.to(cpu_device) for obj in result[0]]
+
+                prediction_dict["word_result_list"] = result[1]["word_result_list"]
+            
+            return prediction_dict

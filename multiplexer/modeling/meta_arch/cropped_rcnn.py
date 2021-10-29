@@ -56,6 +56,4 @@ class CroppedRCNN(GeneralizedRCNN):
                 "scores", proposal_out["seg_results"]["scores"][i]
             )
 
-        x, result, losses = self.roi_heads(proposal_out["in_features"], proposal_out["proposals"])
-
-        return result, proposal_out["proposals"], proposal_out["seg_results"]
+        return super(CroppedRCNN, self).forward_roi_heads(proposal_out, targets)
