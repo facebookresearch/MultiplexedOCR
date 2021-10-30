@@ -34,7 +34,7 @@ class CroppedRCNN(GeneralizedRCNN):
         else:
             features = self.backbone(images.tensors)
             proposal_out = self.forward_proposal(images, features, targets)
-            self.forward_roi_heads(proposal_out, targets)
+            return self.forward_roi_heads(proposal_out, targets)
 
     def forward_roi_heads(self, proposal_out, targets=None):
 

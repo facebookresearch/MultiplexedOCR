@@ -1,3 +1,4 @@
+import getpass
 import logging
 import math
 
@@ -16,7 +17,7 @@ class PolygonOcrDataset(object):
         self.name = name
         self.transforms = transforms
         self.font_paths = {
-            "default": "/path/to/Arial Unicode.ttf",
+            "default": f"/checkpoint/{getpass.getuser()}/fonts/Arial-Unicode-Regular.ttf",
         }
         self.fonts = {}
 
