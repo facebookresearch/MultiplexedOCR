@@ -64,8 +64,9 @@ def train(cfg, local_rank, distributed, tb_logger):
     save_to_disk = get_rank() == 0
     checkpointer = DetectionCheckpointer(cfg, model, optimizer, scheduler, output_dir, save_to_disk)
     extra_checkpoint_data = checkpointer.load(cfg.MODEL.WEIGHT, resume=cfg.SOLVER.RESUME)
-    if cfg.SOLVER.RESUME:
-        arguments.update(extra_checkpoint_data)
+    # Note: even if cfg.SOLVER.RESUME is False, resume would be enabled if last_checkpoint
+    # is detected under save_dir since it's likely the job got preempted/restarted
+    arguments.update(extra_checkpoint_data)
 
     data_loader = make_data_loader(
         cfg,

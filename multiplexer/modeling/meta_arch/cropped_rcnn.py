@@ -9,6 +9,25 @@ class CroppedRCNN(GeneralizedRCNN):
     def __init__(self, cfg):
         super(CroppedRCNN, self).__init__(cfg)
         self.in_feature_type = "image"
+        
+    def add_score_field(self, proposal_out):
+        for i in range(len(proposal_out["proposals"])):
+            # DETECTION_THRESHOLD = 0.3
+            # scores = proposal_out["seg_results"]["scores"][i]
+            # keep_indices = torch.where(scores > DETECTION_THRESHOLD)[0]
+            # print(keep_indices)
+            # proposal_out["proposals"][i] = proposal_out["proposals"][i][keep_indices]
+            # proposal_out["seg_results"]["rotated_boxes"][i] = \
+            # proposal_out["seg_results"]["rotated_boxes"][i][keep_indices]
+            # proposal_out["seg_results"]["polygons"][i] = \
+            # proposal_out["seg_results"]["polygons"][i][keep_indices]
+            # proposal_out["seg_results"]["preds"][i] = \
+            # proposal_out["seg_results"]["preds"][i][keep_indices]
+            # proposal_out["seg_results"]["scores"][i] = \
+            # proposal_out["seg_results"]["scores"][i][keep_indices]
+            proposal_out["proposals"][i].add_field(
+                "scores", proposal_out["seg_results"]["scores"][i]
+            )
 
     def forward(self, images, targets=None):
         """
@@ -34,26 +53,6 @@ class CroppedRCNN(GeneralizedRCNN):
         else:
             features = self.backbone(images.tensors)
             proposal_out = self.forward_proposal(images, features, targets)
+            self.add_score_field(proposal_out)
             return self.forward_roi_heads(proposal_out, targets)
 
-    def forward_roi_heads(self, proposal_out, targets=None):
-
-        for i in range(len(proposal_out["proposals"])):
-            # DETECTION_THRESHOLD = 0.3
-            # scores = proposal_out["seg_results"]["scores"][i]
-            # keep_indices = torch.where(scores > DETECTION_THRESHOLD)[0]
-            # print(keep_indices)
-            # proposal_out["proposals"][i] = proposal_out["proposals"][i][keep_indices]
-            # proposal_out["seg_results"]["rotated_boxes"][i] = \
-            # proposal_out["seg_results"]["rotated_boxes"][i][keep_indices]
-            # proposal_out["seg_results"]["polygons"][i] = \
-            # proposal_out["seg_results"]["polygons"][i][keep_indices]
-            # proposal_out["seg_results"]["preds"][i] = \
-            # proposal_out["seg_results"]["preds"][i][keep_indices]
-            # proposal_out["seg_results"]["scores"][i] = \
-            # proposal_out["seg_results"]["scores"][i][keep_indices]
-            proposal_out["proposals"][i].add_field(
-                "scores", proposal_out["seg_results"]["scores"][i]
-            )
-
-        return super(CroppedRCNN, self).forward_roi_heads(proposal_out, targets)

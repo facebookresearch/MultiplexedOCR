@@ -299,7 +299,7 @@ class CTCSequencePredictor(nn.Module):
                     "preds_size": preds_size,
                     "length_for_loss": length_for_loss.cpu(),
                 }
-                dbg_file = f"manifold://ocr_vll/tree/tmp/dbg_ctc_{self.language}.pt"
+                dbg_file = f"/checkpoint/jinghuang/tmp/ctc_dbg/ctc_dbg_{self.language}.pt"
                 with open(dbg_file, "wb") as buffer:
                     torch.save(dbg_info, buffer)
                 print("WARNING: raw loss is nan or inf: ", raw_loss_seq_decoder)
