@@ -9,7 +9,7 @@ class CroppedRCNN(GeneralizedRCNN):
     def __init__(self, cfg):
         super(CroppedRCNN, self).__init__(cfg)
         self.in_feature_type = "image"
-        
+
     def add_score_field(self, proposal_out):
         for i in range(len(proposal_out["proposals"])):
             # DETECTION_THRESHOLD = 0.3
@@ -55,4 +55,3 @@ class CroppedRCNN(GeneralizedRCNN):
             proposal_out = self.forward_proposal(images, features, targets)
             self.add_score_field(proposal_out)
             return self.forward_roi_heads(proposal_out, targets)
-

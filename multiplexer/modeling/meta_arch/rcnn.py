@@ -8,6 +8,7 @@ from multiplexer.modeling.roi_heads import build_roi_heads
 # from multiplexer.modeling.segmentation.seg_module_builder import build_segmentation
 from multiplexer.structures.image_list import to_image_list
 from multiplexer.structures.word_result import WordResult
+
 from .build import META_ARCH_REGISTRY
 
 
@@ -119,7 +120,7 @@ class GeneralizedRCNN(nn.Module):
             return losses
         else:
             cpu_device = torch.device("cpu")
-            
+
             prediction_dict = {
                 "global_prediction": None,
             }
@@ -127,7 +128,9 @@ class GeneralizedRCNN(nn.Module):
             if self.cfg.MODEL.TRAIN_DETECTION_ONLY:
                 prediction_dict["global_prediction"] = [obj.to(cpu_device) for obj in result]
                 assert len(proposal_out["seg_results"]["scores"]) == 1
-                prediction_dict["scores"] = proposal_out["seg_results"]["scores"][0].to(cpu_device).tolist()
+                prediction_dict["scores"] = (
+                    proposal_out["seg_results"]["scores"][0].to(cpu_device).tolist()
+                )
                 # Add dummy word result list
                 word_result_list = []
                 for _ in range(len(prediction_dict["scores"])):
@@ -139,5 +142,5 @@ class GeneralizedRCNN(nn.Module):
                 prediction_dict["global_prediction"] = [obj.to(cpu_device) for obj in result[0]]
 
                 prediction_dict["word_result_list"] = result[1]["word_result_list"]
-            
+
             return prediction_dict

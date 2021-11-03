@@ -189,7 +189,11 @@ class CTCSequencePredictor(nn.Module):
                 ),
             )
 
-        self.criterion_seq_decoder = nn.CTCLoss(reduction="sum", zero_infinity=True)
+        self.ctc_reduction = "sum_manual"  # "sum"
+        reduction = self.ctc_reduction
+        if "manual" in self.ctc_reduction:
+            reduction = "none"
+        self.criterion_seq_decoder = nn.CTCLoss(reduction=reduction, zero_infinity=True)
         # self.criterion_seq_decoder = CTCLoss()
 
         for m in self.modules():
@@ -268,7 +272,7 @@ class CTCSequencePredictor(nn.Module):
             # [ 43,  13,  39,  39,  14,  13,  19,  19, 121,   0,   0,   0,   0,   0, ... ]
             # so length will be 8 for this sample
             # if we want to clean up codebase, word_targets for CTC loss should be changed in
-            # text_spotting_pytorch/SPN/d2ocr/structures/segmentation_mask.py
+            # multiplexer/structures/segmentation_mask.py
             # and length can be passed as an input, then we don't need decoder_targets here
             length_for_loss = torch.count_nonzero(decoder_targets != self.num_char + 1, dim=1).int()
 
@@ -289,32 +293,58 @@ class CTCSequencePredictor(nn.Module):
             # raw_loss_seq_decoder = self.criterion_seq_decoder(
             #     preds, flatten_targets.cpu(), preds_size, length_for_loss.cpu()
             # )
-            if torch.isnan(raw_loss_seq_decoder) or torch.isinf(raw_loss_seq_decoder):
-                # still getting nan in very rare case but training doesn't seem to be affected
-                from virtual_fs.virtual_io import open
 
-                dbg_info = {
-                    "preds": preds,
-                    "flatten_targets": flatten_targets.cpu(),
-                    "preds_size": preds_size,
-                    "length_for_loss": length_for_loss.cpu(),
-                }
-                dbg_file = f"/checkpoint/jinghuang/tmp/ctc_dbg/ctc_dbg_{self.language}.pt"
-                with open(dbg_file, "wb") as buffer:
-                    torch.save(dbg_info, buffer)
-                print("WARNING: raw loss is nan or inf: ", raw_loss_seq_decoder)
-                print(f"[Debug] preds = {preds}")
-                print(f"[Debug] flatten_targets = {flatten_targets}")
-                print(f"[Debug] preds_size = {preds_size}")
-                print(f"[Debug] length_for_loss = {length_for_loss}")
-                print(f"[Debug] Saved the above debug info to {dbg_file}.")
+            if self.ctc_reduction == "sum_manual":
+                # manual reduction to incorporate language_weights
+                
+                if language_weights is not None:
+                    # print(f"[Debug] raw_loss_seq_decoder (original) {self.language} = {raw_loss_seq_decoder}")
+                    # print(f"[Debug] language_weights {self.language} = {language_weights}")
+                    raw_loss_seq_decoder = raw_loss_seq_decoder * language_weights
+                    # print(f"[Debug] raw_loss_seq_decoder (after) {self.language} = {raw_loss_seq_decoder}")
 
-            # squeeze to change loss from shape (1) to single number to match with other losses
-            # loss_seq_decoder = raw_loss_seq_decoder.cuda().squeeze()
-            loss_seq_decoder = raw_loss_seq_decoder.squeeze()
+                loss_seq_decoder = raw_loss_seq_decoder.sum()                
+                # print(f"[Debug] loss_seq_decoder (after) {self.language} = {loss_seq_decoder}")
+            if self.ctc_reduction == "mean_manual":
+                # manual reduction to incorporate language_weights
+                
+                # when there are zeros in length_for_loss, the corresponding loss should be 0
+                # the original CTCLoss implementation take the guard at the last step with zero_infinity=True
+                # here we make sure 0/0 == 0 by turning zero lengths into ones, i.e., 0/max(0, 1) = 0
+                positive_length_for_loss = torch.clamp(length_for_loss, min=1)
+                raw_loss_seq_decoder = raw_loss_seq_decoder / positive_length_for_loss
 
-            if language_weights is not None:
-                loss_seq_decoder = loss_seq_decoder * language_weights
+                if language_weights is not None:
+                    raw_loss_seq_decoder = raw_loss_seq_decoder * language_weights
+
+                loss_seq_decoder = raw_loss_seq_decoder.sum()
+            elif self.ctc_reduction == "sum":
+                assert (
+                    language_weights is None
+                ), "Please use ctc_reduction == 'sum_manual' to incorporate language_weights"
+                if torch.isnan(raw_loss_seq_decoder) or torch.isinf(raw_loss_seq_decoder):
+                    # still getting nan in very rare case but training doesn't seem to be affected
+                    from virtual_fs.virtual_io import open
+
+                    dbg_info = {
+                        "preds": preds,
+                        "flatten_targets": flatten_targets.cpu(),
+                        "preds_size": preds_size,
+                        "length_for_loss": length_for_loss.cpu(),
+                    }
+                    dbg_file = f"/checkpoint/jinghuang/tmp/ctc_dbg/ctc_dbg_{self.language}.pt"
+                    with open(dbg_file, "wb") as buffer:
+                        torch.save(dbg_info, buffer)
+                    print("WARNING: raw loss is nan or inf: ", raw_loss_seq_decoder)
+                    print(f"[Debug] preds = {preds}")
+                    print(f"[Debug] flatten_targets = {flatten_targets}")
+                    print(f"[Debug] preds_size = {preds_size}")
+                    print(f"[Debug] length_for_loss = {length_for_loss}")
+                    print(f"[Debug] Saved the above debug info to {dbg_file}.")
+
+                # squeeze to change loss from shape (1) to single number to match with other losses
+                # loss_seq_decoder = raw_loss_seq_decoder.cuda().squeeze()
+                loss_seq_decoder = raw_loss_seq_decoder.squeeze()
 
             loss_seq_decoder = loss_seq_decoder / batch_size
             loss_seq_decoder = self.cfg.SEQUENCE.LOSS_WEIGHT * loss_seq_decoder

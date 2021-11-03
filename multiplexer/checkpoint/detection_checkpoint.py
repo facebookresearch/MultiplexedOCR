@@ -70,12 +70,18 @@ class Checkpointer(object):
         checkpoint = self._load_file(f)
         self._load_model(checkpoint)
         if resume:
+            if "iteration" in checkpoint:
+                self.logger.info(f"Resuming from iteration {checkpoint['iteration']}")
             if "optimizer" in checkpoint and self.optimizer:
                 self.logger.info("Loading optimizer from {}".format(f))
                 self.optimizer.load_state_dict(checkpoint.pop("optimizer"))
             if "scheduler" in checkpoint and self.scheduler:
                 self.logger.info("Loading scheduler from {}".format(f))
                 self.scheduler.load_state_dict(checkpoint.pop("scheduler"))
+        else:
+            if "iteration" in checkpoint:
+                self.logger.info(f"Reset iteration from {checkpoint['iteration']} to 0")
+                checkpoint["iteration"] = 0
 
         # return any further checkpoint data
         return checkpoint

@@ -18,6 +18,8 @@ MODEL:
     CONV_BODY: R-50-FPN
     OUT_CHANNELS: 256
   CHAR_MASK_ON: false
+  LANGUAGE_GROUPER:
+    NAME: MultiV0LanguageGrouper  # main change in this config (vs v4)
   LANGUAGE_HEAD:
     NUM_CLASSES: 8
     PREDICTOR: "V5LanguagePredictor"  # main change in this config (vs v2)
@@ -56,7 +58,7 @@ MODEL:
     POOLER_RESOLUTION_W: 32
     POOLER_SAMPLING_RATIO: 2
     POOLER_SCALES: (0.25,)
-    PREDICTOR: MultiSeqLangMaskRCNNC4Predictor
+    PREDICTOR: GroupedMaskRCNNC4Predictor  # main change in this config (vs v3)
     RESOLUTION: 28
     RESOLUTION_H: 64
     RESOLUTION_W: 64
@@ -96,6 +98,16 @@ SEQUENCE:
     HIDDEN_SIZE: 256
     NUM_CHAR: 11000
   ANY2:
+    ARCH: "ctc_lstm" # main change in this config (vs v2)
+    EMBED_SIZE: 200
+    HIDDEN_SIZE: 256
+    NUM_CHAR: 11000
+  ANY3:
+    ARCH: "ctc_lstm" # main change in this config (vs v2)
+    EMBED_SIZE: 200
+    HIDDEN_SIZE: 256
+    NUM_CHAR: 11000
+  ANY4:
     ARCH: "ctc_lstm" # main change in this config (vs v2)
     EMBED_SIZE: 200
     HIDDEN_SIZE: 256

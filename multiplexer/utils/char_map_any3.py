@@ -1,7 +1,7 @@
 from .char_map import CharMap
 
 
-class AnyCharMap(CharMap):
+class Any3CharMap(CharMap):
     MAX_CHAR_NUM = 10998
 
     @classmethod

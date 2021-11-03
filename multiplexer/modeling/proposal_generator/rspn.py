@@ -1,15 +1,16 @@
+import math
+
 import cv2
 import numpy as np
 import torch
-from torch import nn
 
 from multiplexer.structures.bounding_box import BoxList
-from multiplexer.structures.boxlist_ops import cat_boxlist, cat_boxlist_gt
+from multiplexer.structures.boxlist_ops import cat_boxlist_gt
 from multiplexer.structures.rotated_box_list import RotatedBoxList
 from multiplexer.structures.segmentation_mask import SegmentationMask
 
 from .build import PROPOSAL_GENERATOR_REGISTRY
-from .spn import SPN, SEGHead, SEGLossComputation, SEGPostProcessor
+from .spn import SPN, SEGPostProcessor
 
 
 class RotatedSEGPostProcessor(SEGPostProcessor):

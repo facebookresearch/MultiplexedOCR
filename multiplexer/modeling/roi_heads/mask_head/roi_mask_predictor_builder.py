@@ -6,6 +6,7 @@
 #     SeqMaskRCNNC4Predictor,
 #     SeqRCNNC4Predictor,
 # )
+from .roi_mask_predictor_grouped import GroupedMaskRCNNC4Predictor
 from .roi_mask_predictor_multi_seq import MultiSeqMaskRCNNC4Predictor
 
 # from .roi_mask_predictor_multi_seq_1_char_mask import MultiSeq1CharMaskRCNNC4Predictor
@@ -16,6 +17,7 @@ from .roi_mask_predictor_multi_seq_lang import MultiSeqLangMaskRCNNC4Predictor
 
 
 _ROI_MASK_PREDICTOR = {
+    "GroupedMaskRCNNC4Predictor": GroupedMaskRCNNC4Predictor,
     # "MaskRCNNC4Predictor": MaskRCNNC4Predictor,
     # "CharMaskRCNNC4Predictor": CharMaskRCNNC4Predictor,
     # "SeqCharMaskRCNNC4Predictor": SeqCharMaskRCNNC4Predictor,

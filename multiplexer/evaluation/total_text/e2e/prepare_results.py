@@ -87,10 +87,6 @@ def nms(boxes, overlap):
             box2 = boxes[jj]
             box1_score = rec_scores[ii]
             box2_score = rec_scores[jj]
-            str1 = box1[9]
-            str2 = box2[9]
-            box_i = [box1[0], box1[1], box1[4], box1[5]]
-            box_j = [box2[0], box2[1], box2[4], box2[5]]
             poly1 = polygon_from_list(box1[0:-6])
             poly2 = polygon_from_list(box2[0:-6])
             iou = polygon_iou(box1[0:-6], box2[0:-6])

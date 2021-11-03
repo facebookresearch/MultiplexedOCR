@@ -24,7 +24,8 @@ def default_evaluation_params():
         "DET_SAMPLE_NAME_2_ID": "res_img([0-9]+).txt",
         "LTRB": False,  # LTRB:2points(left,top,right,bottom) or 4 points(x1,y1,x2,y2,x3,y3,x4,y4)
         "CRLF": False,  # Lines are delimited by Windows CRLF format
-        "CONFIDENCES": False,  # Detections must include confidence value. MAP and MAR will be calculated,
+        # Detections must include confidence value. MAP and MAR will be calculated
+        "CONFIDENCES": False,
         "SPECIAL_CHARACTERS": "!?.:,*\"()·[]/'",
         "ONLY_REMOVE_FIRST_LAST_CHARACTER": True,
     }
@@ -32,9 +33,11 @@ def default_evaluation_params():
 
 def validate_data(gtFilePath, submFilePath, evaluationParams):
     """
-    Method validate_data: validates that all files in the results folder are correct (have the correct name contents).
-                            Validates also that there are no missing files in the folder.
-                            If some error detected, the method raises the error
+    Method validate_data:
+        Validates that all files in the results folder are correct
+        (have the correct name contents).
+        Also validates that there are no missing files in the folder.
+        If an error is detected, the method raises the error
     """
     gt = rrc_evaluation_funcs.load_zip_file(gtFilePath, evaluationParams["GT_SAMPLE_NAME_2_ID"])
 
@@ -67,13 +70,18 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
     """
     Method evaluate_method: evaluate method and returns the results
         Results. Dictionary with the following values:
-        - method (required)  Global method metrics. Ex: { 'Precision':0.8,'Recall':0.9 }
-        - samples (optional) Per sample metrics. Ex: {'sample1' : { 'Precision':0.8,'Recall':0.9 } , 'sample2' : { 'Precision':0.8,'Recall':0.9 }
+        - method (required)  Global method metrics. Ex: {'Precision': 0.8, 'Recall': 0.9}
+        - samples (optional) Per sample metrics. Example:
+            {
+                'sample1': {'Precision': 0.8, 'Recall': 0.9},
+                'sample2': {'Precision': 0.8, 'Recall': 0.9}
+            }
     """
 
     def polygon_from_points(points, correctOffset=False):
         """
-        Returns a Polygon object to use with the Polygon2 class from a list of 8 points: x1,y1,x2,y2,x3,y3,x4,y4
+        Returns a Polygon object to use with the Polygon2 class
+        from a list of 8 points: x1,y1,x2,y2,x3,y3,x4,y4
         """
         # print("[Debug] points = {}".format(points))
         resBoxes = np.empty([1, len(points)], dtype="int32")
@@ -175,7 +183,8 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                     return True
             return False
         else:
-            # Special characters are removed from the begining and the end of both Detection and GroundTruth
+            # Special characters are removed from the beginning
+            # and the end of both Detection and GroundTruth
             while len(transGt) > 0 and specialCharacters.find(transGt[0]) > -1:
                 transGt = transGt[1:]
 
@@ -192,7 +201,9 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
 
     def include_in_dictionary(transcription):
         """
-        Function used in Word Spotting that finds if the Ground Truth transcription meets the rules to enter into the dictionary. If not, the transcription will be cared as don't care
+        Function used in Word Spotting that finds if the Ground Truth transcription
+        meets the rules to enter into the dictionary.
+        If not, the transcription will be marked as don't care
         """
         # special case 's at final
         if (
@@ -245,7 +256,8 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
 
     def include_in_dictionary_transcription(transcription):
         """
-        Function applied to the Ground Truth transcriptions used in Word Spotting. It removes special characters or terminations
+        Function applied to the Ground Truth transcriptions used in Word Spotting.
+        It removes special characters or terminations
         """
         # special case 's at final
         if (
@@ -561,8 +573,10 @@ def total_text_eval_e2e(
 
 
 def total_text_eval_intermediate(
-    results_dir=f"/checkpoint/{getpass.getuser()}/outputs/SPN/multiplexer/official/inference/total_text_test/trained_model_total_text_intermediate_results/",
-    cache_dir=f"/checkpoint/{getpass.getuser()}/outputs/SPN/multiplexer/official/inference/total_text_test/cache_files/",
+    results_dir=f"/checkpoint/{getpass.getuser()}/outputs/SPN/multiplexer/"
+    + "official/inference/total_text_test/trained_model_total_text_intermediate_results/",
+    cache_dir=f"/checkpoint/{getpass.getuser()}/"
+    + "outputs/SPN/multiplexer/official/inference/total_text_test/cache_files/",
     gt_zip_file=f"/checkpoint/{getpass.getuser()}/datasets/total_text/eval/e2e/gt.zip",
     output_dir=None,
     lexicon=None,
@@ -585,9 +599,13 @@ def total_text_eval_intermediate(
     assert use_rec_seq or use_rec_charmask, "At least one recognition head should be enabled!"
 
     lexicon_path = (
-        f"/checkpoint/{getpass.getuser()}/datasets/total_text/eval/e2e/lexicons/weak_voc_new.txt"
+        f"/checkpoint/{getpass.getuser()}/"
+        + "datasets/total_text/eval/e2e/lexicons/weak_voc_new.txt"
     )
-    lexicon_pair_path = f"/checkpoint/{getpass.getuser()}/datasets/total_text/eval/e2e/lexicons/weak_voc_pair_list.txt"
+    lexicon_pair_path = (
+        f"/checkpoint/{getpass.getuser()}/"
+        + "datasets/total_text/eval/e2e/lexicons/weak_voc_pair_list.txt"
+    )
 
     pred_zip_file = prepare_results_for_evaluation(
         results_dir,

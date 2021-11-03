@@ -3,6 +3,10 @@ from ftfy import fix_encoding
 
 from .char_map_amharic import AmharicCharMap
 from .char_map_any import AnyCharMap
+from .char_map_any1 import Any1CharMap
+from .char_map_any2 import Any2CharMap
+from .char_map_any3 import Any3CharMap
+from .char_map_any4 import Any4CharMap
 from .char_map_arabic import ArabicCharMap
 from .char_map_bengali import BengaliCharMap
 from .char_map_bulgarian import BulgarianCharMap
@@ -67,6 +71,10 @@ from .char_map_vietnamese import VietnameseCharMap
 LANG_CODE_TO_LANG_NAME = {
     "am": "Amharic",
     "any": "Any",
+    "any1": "Any1",
+    "any2": "Any2",
+    "any3": "Any3",
+    "any4": "Any4",
     "ar": "Arabic",
     "bg": "Bulgarian",
     "bn": "Bangla",
@@ -133,6 +141,10 @@ LANG_CODE_TO_LANG_NAME = {
 LANG_NAME_TO_LANG_CODE = {
     "Amharic": "am",
     "Any": "any",
+    "Any1": "any1",
+    "Any2": "any2",
+    "Any3": "any3",
+    "Any4": "any4",
     "Arabic": "ar",
     "Bulgarian": "bg",
     "Bangla": "bn",
@@ -199,6 +211,10 @@ LANG_NAME_TO_LANG_CODE = {
 lang_code_to_char_map_class = {
     "am": AmharicCharMap,
     "any": AnyCharMap,
+    "any1": Any1CharMap,
+    "any2": Any2CharMap,
+    "any3": Any3CharMap,
+    "any4": Any4CharMap,
     "ar": ArabicCharMap,
     "bg": BulgarianCharMap,
     "bn": BengaliCharMap,
@@ -310,6 +326,10 @@ def get_language_config(cfg, language):
     language_config_dict = {
         "am": cfg.SEQUENCE.AMHARIC,
         "any": cfg.SEQUENCE.ANY,
+        "any1": cfg.SEQUENCE.ANY1,
+        "any2": cfg.SEQUENCE.ANY2,
+        "any3": cfg.SEQUENCE.ANY3,
+        "any4": cfg.SEQUENCE.ANY4,
         "ar": cfg.SEQUENCE.ARABIC,
         "bg": cfg.SEQUENCE.BULGARIAN,
         "bn": cfg.SEQUENCE.BENGALI,
