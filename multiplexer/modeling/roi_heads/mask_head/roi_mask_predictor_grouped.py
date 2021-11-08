@@ -28,6 +28,12 @@ class GroupedMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
 
         if do_init_weights:
             self.init_weights()
+            
+    def gt_prob_matrix(self, gt_lang_id):
+        probs = torch.zeros(len(gt_lang_id), self.cfg.MODEL.LANGUAGE_HEAD.NUM_CLASSES)
+        for i, lang_id in enumerate(gt_lang_id):
+            probs[i][lang_id] = 1.0
+        return probs.to(gt_lang_id.device)
 
     def forward(self, x, decoder_targets=None, word_targets=None, gt_language_targets=None):
         language_logits = self.language_predictor(x)
@@ -138,16 +144,19 @@ class GroupedMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
                                 best_language = language
 
                     lang_id += 1
+                    
+            gt_lang_id = gt_lang_id.to(device)
 
             # Compute loss for language prediction head
             loss_seq_dict[
                 "loss_language_pred"
             ] = self.cfg.MODEL.LANGUAGE_HEAD.LOSS_WEIGHT * self.cross_entropy_loss(
-                language_logits, gt_lang_id.to(device=device)
+                language_logits, gt_lang_id
             )
 
             # Language Grouper and loss
-            word_lang_probs = F.gumbel_softmax(language_logits, tau=1.0, hard=False)
+            word_lang_probs = self.gt_prob_matrix(gt_lang_id)
+            # word_lang_probs = F.gumbel_softmax(language_logits, tau=1.0, hard=False)
             word_head_probs, loss_grouper = self.language_grouper(word_lang_probs)
 
             loss_seq_dict.update(loss_grouper)

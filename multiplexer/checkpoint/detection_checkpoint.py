@@ -572,6 +572,9 @@ class DetectionCheckpointer(Checkpointer):
             "V3LanguagePredictor",
             "V4LanguagePredictor",
             "V5LanguagePredictor",
+            "V6LanguagePredictor",
+            "V7LanguagePredictor",
+            "V8LanguagePredictor",
         ]:
             h_divisible = 3
             w_divisible = 4

@@ -143,7 +143,7 @@ class CTCSequencePredictor(nn.Module):
             self.pre_lstm_kernel_height = 3
 
             self.pre_lstm_conv = nn.Conv2d(
-                512,  # same as prod rec model
+                512,
                 self.lstm0_c,
                 kernel_size=(self.pre_lstm_kernel_height, 1),
                 stride=1,

@@ -25,7 +25,7 @@ class MultiV0LanguageGrouper(nn.Module):
             lang_head_probs = F.gumbel_softmax(self.lang_head_weights, tau=self.tau, hard=False)
         else:
             lang_head_probs = F.softmax(self.lang_head_weights, dim=1)
-
+        
         word_head_probs = torch.matmul(word_lang_probs, lang_head_probs)
 
         # encourage each head to process at least one language
