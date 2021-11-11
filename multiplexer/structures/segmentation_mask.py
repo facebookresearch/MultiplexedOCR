@@ -230,8 +230,7 @@ class Polygons(object):
 
         for poly in self.polygons:
             p = poly.clone()
-            TO_REMOVE = 1
-            p[idx::2] = dim - poly[idx::2] - TO_REMOVE
+            p[idx::2] = dim - poly[idx::2]
             flipped_polygons.append(p)
 
         return Polygons(flipped_polygons, size=self.size, mode=self.mode)
@@ -286,9 +285,13 @@ class Polygons(object):
         if mode == "mask":
             # print([p.numpy() for p in self.polygons])
             try:
-                rles = mask_utils.frPyObjects([p.numpy() for p in self.polygons], height, width)
+                rles = mask_utils.frPyObjects(
+                    [p.detach().numpy() for p in self.polygons], height, width
+                )
             except Exception:
-                logger.warning("mask exception: {}".format([p.numpy() for p in self.polygons]))
+                logger.warning(
+                    "mask exception: {}".format([p.detach().numpy() for p in self.polygons])
+                )
                 mask = torch.ones((height, width), dtype=torch.uint8)
                 return mask
             rle = mask_utils.merge(rles)
@@ -359,8 +362,7 @@ class CharPolygons(object):
 
         for char_box in self.char_boxes:
             p = char_box.clone()
-            TO_REMOVE = 1
-            p[idx::2] = dim - char_box[idx::2] - TO_REMOVE
+            p[idx::2] = dim - char_box[idx::2]
             flipped_polygons.append(p)
 
         return CharPolygons(

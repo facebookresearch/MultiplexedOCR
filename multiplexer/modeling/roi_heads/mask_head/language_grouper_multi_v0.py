@@ -14,7 +14,7 @@ class MultiV0LanguageGrouper(nn.Module):
 
         self.tau = cfg.MODEL.LANGUAGE_GROUPER.GUMBLE_SOFTMAX_TAU
         self.loss_weight = cfg.MODEL.LANGUAGE_GROUPER.LOSS_WEIGHT
-        
+
         self.lang_head_weights = nn.Parameter(torch.ones(self.num_languages, self.num_heads))
 
         if do_init_weights:
@@ -25,20 +25,22 @@ class MultiV0LanguageGrouper(nn.Module):
             lang_head_probs = F.gumbel_softmax(self.lang_head_weights, tau=self.tau, hard=False)
         else:
             lang_head_probs = F.softmax(self.lang_head_weights, dim=1)
-        
+
         word_head_probs = torch.matmul(word_lang_probs, lang_head_probs)
 
         # encourage each head to process at least one language
         losses = {}
-        
+
         for i, lang in enumerate(self.cfg.SEQUENCE.LANGUAGES_ENABLED):
-            losses[f"loss_grp_{lang}"] = self.loss_weight * F.relu(1.0 - torch.sum(lang_head_probs[:, i]))
+            losses[f"loss_grp_{lang}"] = self.loss_weight * F.relu(
+                1.0 - torch.sum(lang_head_probs[:, i])
+            )
 
         # print(f"[Debug] word_lang_probs = {word_lang_probs}")
         # print(f"[Debug] lang_head_probs = {lang_head_probs}")
         # print(f"[Debug] word_head_probs = {word_head_probs}")
         # print(f"[Debug] losses = {losses}")
-        
+
         return word_head_probs, losses
 
     def init_weights(self):

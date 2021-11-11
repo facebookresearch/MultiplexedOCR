@@ -10,7 +10,10 @@ import zipfile
 
 def print_help():
     sys.stdout.write(
-        "Usage: python %s.py -g=<gtFile> -s=<submFile> -o=<outputFolder> [-i=<gtImagesFile> -p=<jsonParams>]"
+        (
+            "Usage: python %s.py -g=<gtFile> -s=<submFile> -o=<outputFolder> "
+            + "[-i=<gtImagesFile> -p=<jsonParams>]"
+        )
         % sys.argv[0]
     )
     sys.exit(2)
@@ -56,7 +59,7 @@ def load_zip_file(file, fileNameRegExp="", allEntries=False):
         keyName = name
         if fileNameRegExp != "":
             m = re.match(fileNameRegExp, name)
-            if m == None:
+            if m is None:
                 addFile = False
             else:
                 if len(m.groups()) > 0:
@@ -82,7 +85,7 @@ def decode_utf8(raw):
         if raw.startswith(codecs.BOM_UTF8):
             raw = raw.replace(codecs.BOM_UTF8, "", 1)
         return raw.decode("utf-8")
-    except:
+    except Exception:
         return None
 
 
@@ -97,7 +100,7 @@ def validate_lines_in_file(
     imHeight=0,
 ):
     """
-    This function validates that all lines of the file calling the Line validation function for each line
+    This function validates all lines of the file
     """
     utf8File = decode_utf8(file_contents)
     if utf8File is None:
@@ -157,12 +160,14 @@ def get_tl_line_values(
 
         if withTranscription and withConfidence:
             m = re.match(
-                r"^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-1].?[0-9]*)\s*,(.*)$",
+                r"^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*([0-9]+)\s*,"
+                + r"\s*([0-9]+)\s*,\s*([0-1].?[0-9]*)\s*,(.*)$",
                 line,
             )
             if m is None:
                 m = re.match(
-                    r"^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-1].?[0-9]*)\s*,(.*)$",
+                    r"^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,"
+                    + r"\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-1].?[0-9]*)\s*,(.*)$",
                     line,
                 )
                 raise Exception(
@@ -170,7 +175,8 @@ def get_tl_line_values(
                 )
         elif withConfidence:
             m = re.match(
-                r"^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-1].?[0-9]*)\s*$",
+                r"^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,"
+                + r"\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-1].?[0-9]*)\s*$",
                 line,
             )
             if m is None:
@@ -249,7 +255,13 @@ def validate_clockwise_points(points):
     summatory = edge[0] + edge[1] + edge[2] + edge[3]
     if summatory > 0:
         raise Exception(
-            "Points are not clockwise. The coordinates of bounding quadrilaterals have to be given in clockwise order. Regarding the correct interpretation of 'clockwise' remember that the image coordinate system used is the standard one, with the image origin at the upper left, the X axis extending to the right and Y axis extending downwards."
+            (
+                "Points are not clockwise. The coordinates of bounding quadrilaterals "
+                + "have to be given in clockwise order. Regarding the correct interpretation "
+                + "of 'clockwise' remember that the image coordinate system used is the "
+                + "standard one, with the image origin at the upper left, the X axis extending "
+                + "to the right and Y axis extending downwards."
+            )
         )
 
 
@@ -319,15 +331,18 @@ def main_evaluation(
     per_sample=True,
 ):
     """
-    This process validates a method, evaluates it and if it succed generates a ZIP file with a JSON entry for each sample.
+    This process validates and evaluates a method, and if it succeeds,
+        generates a ZIP file with a JSON entry for each sample.
     Params:
-    p: Dictionary of parmeters with the GT/submission locations. If None is passed, the parameters send by the system are used.
-    default_evaluation_params_fn: points to a function that returns a dictionary with the default parameters used for the evaluation
-    validate_data_fn: points to a method that validates the corrct format of the submission
-    evaluate_method_fn: points to a function that evaluated the submission and return a Dictionary with the results
+    p: dictionary of parmeters with the GT/submission locations.
+        If None is passed, the parameters send by the system are used.
+    default_evaluation_params_fn:
+        function to return a dictionary with the default parameters used for the evaluation
+    validate_data_fn: function to validate the corrct format of the submission
+    evaluate_method_fn: function to evaluate the submission and return a dictionary of results
     """
 
-    if p == None:
+    if p is None:
         p = dict([s[1:].split("=") for s in sys.argv[1:]])
         if len(sys.argv) < 2:
             print_help()
@@ -363,7 +378,7 @@ def main_evaluation(
         return resDict
 
     if "o" in p:
-        if per_sample == True:
+        if per_sample:
             for k, v in evalData["per_sample"].items():
                 outZip.writestr(k + ".json", json.dumps(v))
 
@@ -391,8 +406,10 @@ def main_validation(default_evaluation_params_fn, validate_data_fn):
     """
     This process validates a method
     Params:
-    default_evaluation_params_fn: points to a function that returns a dictionary with the default parameters used for the evaluation
-    validate_data_fn: points to a method that validates the corrct format of the submission
+    default_evaluation_params_fn:
+        function that returns a dictionary with the default parameters used for the evaluation
+    validate_data_fn:
+        function that validates the corrct format of the submission
     """
     try:
         p = dict([s[1:].split("=") for s in sys.argv[1:]])

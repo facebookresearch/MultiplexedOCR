@@ -84,7 +84,8 @@ def total_text_eval_det(
             )
             return 0
 
-    ##############################Initialization###################################
+    # Initialization
+    #
     # global_tp = 0
     # global_fp = 0
     # global_fn = 0
@@ -92,7 +93,6 @@ def total_text_eval_det(
     global_tau = []
     fsc_k = 0.8
     k = 2
-    ###############################################################################
 
     for input_id in allInputs:
         if input_id[-3:] != "txt":
@@ -217,7 +217,7 @@ def total_text_eval_det(
             num_non_zero_in_sigma = non_zero_in_sigma[0].shape[0]
 
             if num_non_zero_in_sigma >= k:
-                ####search for all detections that overlaps with this groundtruth
+                # search for all detections that overlaps with this groundtruth
                 qualified_tau_candidates = np.where(
                     (local_tau_table[gt_id, :] >= tp) & (det_flag[0, :] == 0)
                 )
@@ -277,7 +277,7 @@ def total_text_eval_det(
             num_non_zero_in_tau = non_zero_in_tau[0].shape[0]
 
             if num_non_zero_in_tau >= k:
-                ####search for all detections that overlaps with this groundtruth
+                # search for all detections that overlaps with this groundtruth
                 qualified_sigma_candidates = np.where(
                     (local_sigma_table[:, det_id] >= tp) & (gt_flag[0, :] == 0)
                 )
@@ -333,7 +333,7 @@ def total_text_eval_det(
         gt_flag = np.zeros((1, num_gt))
         det_flag = np.zeros((1, num_det))
 
-        #######first check for one-to-one case##########
+        # first check for one-to-one case
         (
             local_accumulative_recall,
             local_accumulative_precision,
@@ -352,7 +352,7 @@ def total_text_eval_det(
             det_flag,
         )
 
-        #######then check for one-to-many case##########
+        # then check for one-to-many case
         (
             local_accumulative_recall,
             local_accumulative_precision,
@@ -371,7 +371,7 @@ def total_text_eval_det(
             det_flag,
         )
 
-        #######then check for many-to-one case##########
+        # then check for many-to-one case
         (
             local_accumulative_recall,
             local_accumulative_precision,

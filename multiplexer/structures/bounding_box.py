@@ -81,8 +81,7 @@ class BoxList(object):
             bbox = torch.cat((xmin, ymin, xmax, ymax), dim=-1)
             bbox = BoxList(bbox, self.size, mode=mode, use_char_ann=self.use_char_ann)
         else:
-            TO_REMOVE = 1
-            bbox = torch.cat((xmin, ymin, xmax - xmin + TO_REMOVE, ymax - ymin + TO_REMOVE), dim=-1)
+            bbox = torch.cat((xmin, ymin, xmax - xmin, ymax - ymin), dim=-1)
             bbox = BoxList(bbox, self.size, mode=mode, use_char_ann=self.use_char_ann)
         bbox._copy_extra_fields(self)
         return bbox
@@ -92,13 +91,12 @@ class BoxList(object):
             xmin, ymin, xmax, ymax = self.bbox.split(1, dim=-1)
             return xmin, ymin, xmax, ymax
         elif self.mode == "xywh":
-            TO_REMOVE = 1
             xmin, ymin, w, h = self.bbox.split(1, dim=-1)
             return (
                 xmin,
                 ymin,
-                xmin + (w - TO_REMOVE).clamp(min=0),
-                ymin + (h - TO_REMOVE).clamp(min=0),
+                xmin + w,
+                ymin + h,
             )
         else:
             raise RuntimeError("Should not be here")

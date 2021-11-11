@@ -296,18 +296,18 @@ class CTCSequencePredictor(nn.Module):
 
             if self.ctc_reduction == "sum_manual":
                 # manual reduction to incorporate language_weights
-                
+
                 if language_weights is not None:
                     # print(f"[Debug] raw_loss_seq_decoder (original) {self.language} = {raw_loss_seq_decoder}")
                     # print(f"[Debug] language_weights {self.language} = {language_weights}")
                     raw_loss_seq_decoder = raw_loss_seq_decoder * language_weights
                     # print(f"[Debug] raw_loss_seq_decoder (after) {self.language} = {raw_loss_seq_decoder}")
 
-                loss_seq_decoder = raw_loss_seq_decoder.sum()                
+                loss_seq_decoder = raw_loss_seq_decoder.sum()
                 # print(f"[Debug] loss_seq_decoder (after) {self.language} = {loss_seq_decoder}")
             if self.ctc_reduction == "mean_manual":
                 # manual reduction to incorporate language_weights
-                
+
                 # when there are zeros in length_for_loss, the corresponding loss should be 0
                 # the original CTCLoss implementation take the guard at the last step with zero_infinity=True
                 # here we make sure 0/0 == 0 by turning zero lengths into ones, i.e., 0/max(0, 1) = 0

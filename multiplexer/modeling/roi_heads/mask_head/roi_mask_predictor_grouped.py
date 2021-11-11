@@ -28,7 +28,7 @@ class GroupedMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
 
         if do_init_weights:
             self.init_weights()
-            
+
     def gt_prob_matrix(self, gt_lang_id):
         probs = torch.zeros(len(gt_lang_id), self.cfg.MODEL.LANGUAGE_HEAD.NUM_CLASSES)
         for i, lang_id in enumerate(gt_lang_id):
@@ -144,7 +144,7 @@ class GroupedMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
                                 best_language = language
 
                     lang_id += 1
-                    
+
             gt_lang_id = gt_lang_id.to(device)
 
             # Compute loss for language prediction head
@@ -182,7 +182,9 @@ class GroupedMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
                     x=kept_x,
                     decoder_targets=kept_decoder_target,
                     word_targets=kept_word_target,
-                    language_weights=(word_head_probs[:, head_id] + self.cfg.SEQUENCE.LOSS_WEIGHT_BASE),
+                    language_weights=(
+                        word_head_probs[:, head_id] + self.cfg.SEQUENCE.LOSS_WEIGHT_BASE
+                    ),
                 )
 
             return {
@@ -211,7 +213,7 @@ class GroupedMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
             word_result = WordResult()
             language_id = torch.argmax(word_lang_probs[k]).item()
             language_prob = word_lang_probs[k][language_id].item()
-            
+
             head_id = torch.argmax(word_head_probs[k]).item()
             head_prob = word_head_probs[k][head_id].item()
 

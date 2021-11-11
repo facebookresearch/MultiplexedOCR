@@ -1,4 +1,4 @@
-# inherited by: v11
+# based on v2
 CHAR_MAP:
   DIR: /checkpoint/jinghuang/multiplexer/charmap/public/v3/
 DATALOADER:
@@ -19,6 +19,8 @@ MODEL:
     CONV_BODY: R-50-FPN
     OUT_CHANNELS: 256
   CHAR_MASK_ON: false
+  LANGUAGE_GROUPER:
+    NAME: MultiV0LanguageGrouper  # main change in this config (vs v2)
   LANGUAGE_HEAD:
     NUM_CLASSES: 8
     PREDICTOR: V1LanguagePredictor
@@ -51,7 +53,7 @@ MODEL:
     POOLER_RESOLUTION_W: 32
     POOLER_SAMPLING_RATIO: 2
     POOLER_SCALES: (0.25,)
-    PREDICTOR: MultiSeqLangMaskRCNNC4Predictor
+    PREDICTOR: GroupedMaskRCNNC4Predictor  # main change in this config (vs v2)
     RESOLUTION: 28
     RESOLUTION_H: 64
     RESOLUTION_W: 64

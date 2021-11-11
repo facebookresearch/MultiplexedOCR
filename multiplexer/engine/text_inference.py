@@ -807,7 +807,7 @@ def inference_on_the_fly(
                     use_seg_poly = cfg.MODEL.SEG.USE_SEG_POLY
 
                 if not use_seg_poly:
-                    prediction_dict["masks"] = global_prediction.get_field("mask").cpu().numpy()
+                    prediction_dict["masks"] = global_prediction.get_field("mask").detach().cpu().numpy()
                 else:
                     prediction_dict["masks"] = global_prediction.get_field("masks").get_polygons()
 

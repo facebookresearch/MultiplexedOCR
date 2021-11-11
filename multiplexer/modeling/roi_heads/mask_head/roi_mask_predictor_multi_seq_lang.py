@@ -228,7 +228,6 @@ class MultiSeqLangMaskRCNNC4Predictor(MultiSeqMaskRCNNC4Predictor):
         # During inferencing:
         # convert to probabilities
         language_probs = F.softmax(language_logits, dim=1)
-        print(f"[Debug] language_probs: {language_probs}")
 
         if self.run_all_heads:
             decoded_chars_list = []

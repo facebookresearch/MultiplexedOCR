@@ -10,7 +10,7 @@ class BinaryLanguageGrouper(nn.Module):
         # self.cfg = cfg
 
         self.num_languages = cfg.MODEL.LANGUAGE_HEAD.NUM_CLASSES
-        
+
         self.tau = cfg.MODEL.LANGUAGE_GROUPER.GUMBLE_SOFTMAX_TAU
         self.loss_weight = cfg.MODEL.LANGUAGE_GROUPER.LOSS_WEIGHT
 

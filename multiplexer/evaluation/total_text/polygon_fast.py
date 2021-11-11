@@ -20,7 +20,7 @@ def area(x, y):
 
 def approx_area_of_intersection(det_x, det_y, gt_x, gt_y):
     """
-    This helper determine if both polygons are intersecting with each others with an approximation method.
+    Decide if both polygons are intersecting with each others using an approximation method.
     Area of intersection represented by the minimum bounding rectangular [xmin, ymin, xmax, ymax]
     """
     det_ymax = np.max(det_y)

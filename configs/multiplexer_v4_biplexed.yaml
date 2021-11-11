@@ -1,3 +1,4 @@
+# inherited by v5
 CHAR_MAP:
   DIR: /checkpoint/jinghuang/multiplexer/charmap/public/v3/
 DATALOADER:
