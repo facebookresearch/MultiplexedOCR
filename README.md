@@ -65,7 +65,7 @@ conda init bash
 source ~/.bashrc
 conda activate multiplexer
 ```
-Then, modify the yaml file and run the training/finetuning
+Then, modify the yaml file so that CHAR_MAP.DIR is pointing to the directory containing the character map jsons (examples could be found under [charmap/public/v3](https://github.com/facebookresearch/MultiplexedOCR/tree/main/charmap/public/v3)), and run the training/finetuning
 ```
 yaml=PATH_TO_YAML_FILE
 python3 tools/train_net.py --config-file $yaml
