@@ -54,7 +54,7 @@ img=YOUR_PATH_TO_IMAGE_FILE
 python -m demo.demo \
 --config-file configs/demo.yaml \
 --input $img \
---output /tmp/multiplexer \
+--output vis_$img \
 MODEL.WEIGHT $weight
 ```
 
@@ -70,6 +70,20 @@ Then, modify the yaml file so that CHAR_MAP.DIR is pointing to the directory con
 yaml=PATH_TO_YAML_FILE
 python3 tools/train_net.py --config-file $yaml
 ```
+
+## Models
+
+<table>
+    <tr>
+        <th>Model Name</th>
+        <th>Download Link</th>
+    </tr>
+    <tr>
+        <td>PMLX1G</td>
+        <td><a href='https://dl.fbaipublicfiles.com/MultiplexedOCR/PMLX1G.pth'>download</a></td>
+    </tr>
+</table>
+
 
 ## Relationship to Mask TextSpotter v3
 

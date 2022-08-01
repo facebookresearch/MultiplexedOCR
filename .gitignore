@@ -7,5 +7,11 @@ Multiplexer.egg-info
 dist
 
 # ipython/jupyter notebooks
-*.ipynb
+# *.ipynb
 **/.ipynb_checkpoints/
+
+# Local notebooks
+notebook/local/
+
+# aws
+aws/

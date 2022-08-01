@@ -30,7 +30,13 @@ def parse_args():
     parser.add_argument(
         "--output",
         type=str,
-        help="A file or directory to save output visualizations. "
+        help="File name to save output visualizations. "
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="/tmp/multiplexer",
+        help="Directory to save output visualizations. "
     )
     parser.add_argument(
         "opts",
@@ -138,13 +144,15 @@ if __name__ == "__main__":
         result_logs_dict=result_logs_dict,
         resize_ratio=resize_ratio,
     )
-    if os.path.isdir(args.output):
-        out_filename = os.path.join(args.output, "vis_" + os.path.basename(args.input))
-    else:
-        out_filename = args.output
+    
+    if not os.path.isdir(args.output_dir):
+        print(f"Output directory does not exist. Creating {args.output_dir} ...")
+        os.makedirs(args.output_dir, exist_ok=True)
+
+    out_path = os.path.join(args.output_dir, args.output)
         
-    print(f"[Info] Saving visualization to {out_filename}")
-    img_vis.save(out_filename)
+    print(f"[Info] Saving visualization to {out_path}")
+    img_vis.save(out_path)
 
 
 
