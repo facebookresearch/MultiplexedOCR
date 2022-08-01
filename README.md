@@ -50,11 +50,12 @@ Then, you can run the demo script for a single image inference by
 ```
 weight=YOUR_PATH_TO_WEIGHT_FILE
 img=YOUR_PATH_TO_IMAGE_FILE
+output=YOUR_OUTPUT_FILE_NAME
 
 python -m demo.demo \
 --config-file configs/demo.yaml \
 --input $img \
---output vis_$img \
+--output $output \
 MODEL.WEIGHT $weight
 ```
 
