@@ -81,7 +81,7 @@ python3 tools/train_net.py --config-file $yaml
     </tr>
     <tr>
         <td>PMLX1G</td>
-        <td><a href='https://dl.fbaipublicfiles.com/MultiplexedOCR/weights/PMLX1G/PMLX1G.pth'>download</a></td>
+        <td><a href='https://dl.fbaipublicfiles.com/MultiplexedOCR/weights/PMLX1G/PMLX1G.pth'>weights</a>&nbsp;|&nbsp;<a href='https://dl.fbaipublicfiles.com/MultiplexedOCR/weights/PMLX1G/config.yaml'>config</a></td>
     </tr>
 </table>
 
