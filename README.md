@@ -59,6 +59,8 @@ python -m demo.demo \
 MODEL.WEIGHT $weight
 ```
 
+Alternatively, you can check out our [demo notebook](https://github.com/facebookresearch/MultiplexedOCR/blob/main/notebook/inference/demo.ipynb) for a quick demo!
+
 ## Training
 Activate the multiplexer environment if you haven't already done so:
 ```
